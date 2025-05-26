@@ -59,20 +59,19 @@ print(mul(5,5))
 
 # 下面进行包的测试
 
-# # 调用方式1:这种方式导入了包,可以使用包中的模块,使用函数则需要指定模块名
+# # 调用方式1:这种方式导入包,可以使用包中的模块,使用函数则需要指定模块名
 # import pack_01
 # pack_01.login.fun_login()  # 调用登录模块中的函数
 # pack_01.register.fun_register()  # 调用注册模块中的函数
-# # 注意:此时需要在包的__init__.py文件中定义__all__变量,否则会报错提示找不到模块或函数(也可以在包的__init__.py文件中使用from. import login和from. import register来导入模块,这样就可以直接使用pack_01.login.fun_login()和pack_01.register.fun_register()来调用函数)
+# # 注意:此时需要在__init__.py文件中使用from. import login和from. import register来导入模块,可以直接使用pack_01.login.fun_login()和pack_01.register.fun_register()来调用函数
 
-# # 调用方式2:这种方式直接导入了包中的模块,可以使用模块中的函数
+# # 调用方式2:这种方式直接导入了包中的模块,是显式调用,可以直接使用login.fun_login()和register.fun_register()来调用函数,不需要在__init__.py文件中导入模块
 # from pack_01 import login, register
 # login.fun_login()  # 调用登录模块中的函数
 # register.fun_register()  # 调用注册模块中的函数
-# # 注意:此时不需要在包的__init__.py文件中定义__all__变量,也不需要在包的__init__.py文件中使用from. import login和from. import register来导入模块,因为已经直接导入了模块,可以直接使用login.fun_login()和register.fun_register()来调用函数
 
 # # 调用方式3:
-# from pack_01 import *  # 导入包中的所有模块
-# login.fun_login()  # 调用登录模块中的函数
-# register.fun_register()  # 调用注册模块中的函数
-# # 注意:和方式1一样,也需要在包的__init__.py文件中定义__all__变量,否则会报错提示找不到模块或函数(也可以在包的__init__.py文件中使用from. import login和from. import register来导入模块,但是调用函数时,不必指定包名,可以直接使用login.fun_login()和register.fun_register()来调用函数)
+from pack_01 import *  # 导入包中的所有模块
+login.fun_login()  # 调用登录模块中的函数
+register.fun_register()  # 调用注册模块中的函数
+# # 注意:可以使用__init__.py文件中的__all__变量来控制导入的模块,如果不定义__all__变量,只会导入已经定义或导入到其自身命名空间中的名称,如果定义了__all__变量,则只会导入__all__变量中指定的模块
