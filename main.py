@@ -1,21 +1,8 @@
 """
-我是多行注释
-我有很多行
-我主要是来测试多行注释
+这是天上人间一号妹妹的代码测试
 """
-#我再来试试单行注释
-'''
-我是多行注释
-我有很多行
-我主要是来测试多行注释
-'''
 
-# # print("天上人间一号妹妹，你好")
-# name="杨德平"
-# for i in name:
-#     print(i,end="")
-
-'''
+"""
 # 这是一个登陆界面中的密码输入控制代码,确保密码长度大于6位并且尝试次数不高于3次
 # 当密码长度小于6位时,抛出自定义异常PwdLengthError,返回自定义错误信息
 # 当尝试次数超过3次时,结束程序运行并给出提示信息
@@ -43,7 +30,7 @@ else:
     if not login_result:
         print("密码输入错误次数过多!")
 print("看到我,代表程序继续执行,只是便于观察异常处理是否成功!")
-'''
+"""
 
 """
 # 模块调用测试
@@ -69,3 +56,23 @@ print(mul(5,5))
 
 # 以上这两种方法:当对变量进行赋值操作时,main.py模块会在自己的命名空间中创建一个新的变量,而不是修改ComputeModule命名空间中的变量;当对可变类型变量进行修改操作时(例如:用append()方法增加元素),会直接修改ComputeModule命名空间中的变量,因为可变类型变量的引用指向的是同一个对象。需要注意的是,不可变类型变量只能进行赋值操作,不能直接修改内容。
 """
+
+# 下面进行包的测试
+
+# # 调用方式1:这种方式导入了包,可以使用包中的模块,使用函数则需要指定模块名
+# import pack_01
+# pack_01.login.fun_login()  # 调用登录模块中的函数
+# pack_01.register.fun_register()  # 调用注册模块中的函数
+# # 注意:此时需要在包的__init__.py文件中定义__all__变量,否则会报错提示找不到模块或函数(也可以在包的__init__.py文件中使用from. import login和from. import register来导入模块,这样就可以直接使用pack_01.login.fun_login()和pack_01.register.fun_register()来调用函数)
+
+# # 调用方式2:这种方式直接导入了包中的模块,可以使用模块中的函数
+# from pack_01 import login, register
+# login.fun_login()  # 调用登录模块中的函数
+# register.fun_register()  # 调用注册模块中的函数
+# # 注意:此时不需要在包的__init__.py文件中定义__all__变量,也不需要在包的__init__.py文件中使用from. import login和from. import register来导入模块,因为已经直接导入了模块,可以直接使用login.fun_login()和register.fun_register()来调用函数
+
+# # 调用方式3:
+# from pack_01 import *  # 导入包中的所有模块
+# login.fun_login()  # 调用登录模块中的函数
+# register.fun_register()  # 调用注册模块中的函数
+# # 注意:和方式1一样,也需要在包的__init__.py文件中定义__all__变量,否则会报错提示找不到模块或函数(也可以在包的__init__.py文件中使用from. import login和from. import register来导入模块,但是调用函数时,不必指定包名,可以直接使用login.fun_login()和register.fun_register()来调用函数)
