@@ -123,3 +123,45 @@ if len_f > 0:
     print(f"斐波那契数列的前{len_f}项为:")
     print_fib(len_f)
 """
+
+# 装饰器和闭包代码练习
+def fun_1():                          # 这是被装饰函数1/原函数1,需要添加的功能
+    print("这是新功能1")
+def fun_2():                          # 这是被装饰函数2/原函数2,需要添加的功能
+    print("这是新功能2")
+
+def fun_origin(fn):               # 这是装饰函数,通过装饰器的方式,将fun_1和fun_2的功能添加进去,形参fn用于将新功能fun_1和fun_2作为实参传入
+    def fun_inner():               # 这是内函数,也是闭包函数
+        print("这是原有功能")
+        fn()                             # 这是外函数fun_origin的局部变量,通过传入实参(这里的实参是函数名,例如fun_1),执行了fun_1(),将fun_1的功能引入了装饰函数
+    return fun_inner
+
+fun_new = fun_origin(fun_1)        # 调用fun_origin函数,将fun_1传入,返回fun_inner函数
+fun_new()                                    # 调用fun_inner函数,执行新功能fun_1
+fun_new = fun_origin(fun_2)        # 调用fun_origin函数,将fun_2传入,返回fun_inner函数
+fun_new()                                    # 调用fun_inner函数,执行新功能fun_2
+
+# 装饰器和闭包代码练习
+def fun_1():                          # 这是被装饰函数1/原函数1,需要添加的功能
+    print("这是新功能1")
+def fun_2():                          # 这是被装饰函数2/原函数2,需要添加的功能
+    print("这是新功能2")
+def fun_3():                          # 假设有更多功能
+    print("这是新功能3")
+
+# 修改后的装饰函数，现在可以接收一个函数列表/元组
+def fun_origin_batch(fns_list): # 形参fns_list用于接收一个包含多个函数的列表或元组
+    def fun_inner_batch():      # 这是内函数，也是闭包函数
+        print("--- 这是原有功能（批处理开始）---")
+        for fn in fns_list:     # 遍历传入的函数列表，逐一执行
+            fn()                # 执行列表中的每个函数
+        print("--- 这是原有功能（批处理结束）---")
+    return fun_inner_batch
+
+# 在一次调用中增加所有的功能
+# 将fun_1和fun_2（甚至更多）作为列表传入fun_origin_batch
+fun_new_combined = fun_origin_batch([fun_1, fun_2, fun_3]) # 调用fun_origin_batch，传入函数列表，返回fun_inner_batch函数
+fun_new_combined()                                         # 调用fun_inner_batch函数，执行所有新功能
+
+print("\n--- 再次调用，验证批处理 ---")
+fun_new_combined() # 再次调用，会再次执行所有批处理功能
