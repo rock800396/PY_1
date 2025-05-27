@@ -77,3 +77,49 @@ print(mul(5,5))
 # register.fun_register()  # 调用注册模块中的函数
 # # 注意:可以使用__init__.py文件中的__all__变量来控制导入的模块,如果不定义__all__变量,只会导入已经定义或导入到其自身命名空间中的名称,如果定义了__all__变量,则只会导入__all__变量中指定的模块
 """
+
+"""
+# 斐波那契数列的递归实现
+# 异常处理
+import sys
+
+# 设定计数器
+MaxInputCount = 3   # 最大尝试次数
+AttemptCount = 0    #当前尝试次数
+
+# 求斐波那契数列第N项目的值
+def fib(n):
+    if n == 1 or n == 2:
+        return 1
+    else:
+        return fib(n - 1) + fib(n - 2)
+
+# 打印斐波那契数列
+def print_fib(len_f=10):
+    for i in range(1, len_f + 1):
+        print(fib(i),end=" ")
+
+# 接收用户输入并进行异常处理
+len_f = None
+while AttemptCount < MaxInputCount:
+    try:
+        len_f = int(input("请输入要打印的斐波那契数列长度:"))
+        if len_f <= 0:                                       #如果输入值小于0,打印提示,计数器+1,程序继续执行,此时:else不会被执行;因为没有发生异常,所以异常处理代码不会被执行;会跳到while循环尾部判断输入次数是否超过最大值的if语句.如果此时尝试次数超过3次,if条件为真,会打印输入次数过                                                            多的信息并退出程序,sys.exit(2)是退出代码,2是错误码;如果此时尝试次数不超过3次,本次while循环结束,但没有退出while循环,继续从头开始while循环.
+            print("输入必须为正整数,请重新输入!")
+            AttemptCount += 1
+        else:
+            break                                             #如果输入值正常,结束循环,程序继续执行
+    except ValueError:                                  #捕获到输入不是整数的异常,程序继续执行
+        AttemptCount += 1
+        print("输入的不是整数,请重新输入!")
+    except Exception as e:                           #捕获到其他异常,程序退出,sys.exit(1)是退出代码,1是错误码
+        print(f"发生未知错误:{e},程序退出!")
+        sys.exit(1)
+    if AttemptCount >= MaxInputCount:     #判断尝试次数是否超过最大值
+        print("输入错误次数过多，程序退出!")
+        sys.exit(2)
+# 调用函数,打印斐波那契数列
+if len_f > 0:
+    print(f"斐波那契数列的前{len_f}项为:")
+    print_fib(len_f)
+"""
