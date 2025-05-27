@@ -1,5 +1,5 @@
 """
-这是天上人间一号妹妹的代码测试
+这是天上人间一号妹妹的代码练习
 """
 
 """
@@ -104,7 +104,7 @@ len_f = None
 while AttemptCount < MaxInputCount:
     try:
         len_f = int(input("请输入要打印的斐波那契数列长度:"))
-        if len_f <= 0:                                       #如果输入值小于0,打印提示,计数器+1,程序继续执行,此时:else不会被执行;因为没有发生异常,所以异常处理代码不会被执行;会跳到while循环尾部判断输入次数是否超过最大值的if语句.如果此时尝试次数超过3次,if条件为真,会打印输入次数过                                                            多的信息并退出程序,sys.exit(2)是退出代码,2是错误码;如果此时尝试次数不超过3次,本次while循环结束,但没有退出while循环,继续从头开始while循环.
+        if len_f <= 0:                                       #如果输入值小于0,打印提示,计数器+1,程序继续执行,此时:else不会被执行;因为没有发生异常,所以异常处理代码不会被执行;会跳到while循环尾部判断输入次数是否超过最大值的if语句.如果此时尝试次数超过3次,if条件为真,会打印输入次数过多的信息并退出程序,sys.exit(2)是退出代码,2是错误码;如果此时尝试次数不超过3次,本次while循环结束,但没有退出while循环,继续从头开始while循环.
             print("输入必须为正整数,请重新输入!")
             AttemptCount += 1
         else:
@@ -124,44 +124,20 @@ if len_f > 0:
     print_fib(len_f)
 """
 
+"""
 # 装饰器和闭包代码练习
-def fun_1():                          # 这是被装饰函数1/原函数1,需要添加的功能
+def fun_1():                                # 这是需要添加的功能1
     print("这是新功能1")
-def fun_2():                          # 这是被装饰函数2/原函数2,需要添加的功能
+def fun_2():                                # 这是需要添加的功能2
     print("这是新功能2")
 
-def fun_origin(fn):               # 这是装饰函数,通过装饰器的方式,将fun_1和fun_2的功能添加进去,形参fn用于将新功能fun_1和fun_2作为实参传入
-    def fun_inner():               # 这是内函数,也是闭包函数
+def fun_origin(fn_list):               # 这是装饰函数(存疑),用于将fun_1和fun_2的功能添加进去,形参fn_list(类型为函数列表)用于将新功能fun_1和fun_2作为实参传入(以函数列表形式传入),可以使用*args来接收任意数量的函数参数
+    def fun_inner():                     # 这是内函数,也是闭包函数
         print("这是原有功能")
-        fn()                             # 这是外函数fun_origin的局部变量,通过传入实参(这里的实参是函数名,例如fun_1),执行了fun_1(),将fun_1的功能引入了装饰函数
+        for fn in fn_list:                 # 遍历传入的函数列表,逐一执行
+            fn()                               # 执行列表中的每个函数,fn_list是外函数fun_origin的局部变量(类型为函数列表),通过实参传入
     return fun_inner
 
-fun_new = fun_origin(fun_1)        # 调用fun_origin函数,将fun_1传入,返回fun_inner函数
-fun_new()                                    # 调用fun_inner函数,执行新功能fun_1
-fun_new = fun_origin(fun_2)        # 调用fun_origin函数,将fun_2传入,返回fun_inner函数
-fun_new()                                    # 调用fun_inner函数,执行新功能fun_2
-
-# 装饰器和闭包代码练习
-def fun_1():                          # 这是被装饰函数1/原函数1,需要添加的功能
-    print("这是新功能1")
-def fun_2():                          # 这是被装饰函数2/原函数2,需要添加的功能
-    print("这是新功能2")
-def fun_3():                          # 假设有更多功能
-    print("这是新功能3")
-
-# 修改后的装饰函数，现在可以接收一个函数列表/元组
-def fun_origin_batch(fns_list): # 形参fns_list用于接收一个包含多个函数的列表或元组
-    def fun_inner_batch():      # 这是内函数，也是闭包函数
-        print("--- 这是原有功能（批处理开始）---")
-        for fn in fns_list:     # 遍历传入的函数列表，逐一执行
-            fn()                # 执行列表中的每个函数
-        print("--- 这是原有功能（批处理结束）---")
-    return fun_inner_batch
-
-# 在一次调用中增加所有的功能
-# 将fun_1和fun_2（甚至更多）作为列表传入fun_origin_batch
-fun_new_combined = fun_origin_batch([fun_1, fun_2, fun_3]) # 调用fun_origin_batch，传入函数列表，返回fun_inner_batch函数
-fun_new_combined()                                         # 调用fun_inner_batch函数，执行所有新功能
-
-print("\n--- 再次调用，验证批处理 ---")
-fun_new_combined() # 再次调用，会再次执行所有批处理功能
+fun_new = fun_origin([fun_1,fun_2])       # 调用fun_origin函数,将fun_1,fun_2作为函数列表的值传入,返回fun_inner函数
+fun_new()                                               # 调用fun_inner函数,执行新功能fun_1,fun_2
+"""
