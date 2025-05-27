@@ -138,6 +138,26 @@ def fun_origin(fn_list):               # 这是装饰函数(存疑),用于将fun
             fn()                               # 执行列表中的每个函数,fn_list是外函数fun_origin的局部变量(类型为函数列表),通过实参传入
     return fun_inner
 
-fun_new = fun_origin([fun_1,fun_2])       # 调用fun_origin函数,将fun_1,fun_2作为函数列表的值传入,返回fun_inner函数
-fun_new()                                               # 调用fun_inner函数,执行新功能fun_1,fun_2
+fun_new = fun_origin([fun_1,fun_2])       # 调用fun_origin函数,将fun_1,fun_2作为函数列表的值传入,返回fun_inner函数,注意,此时内函数被定义,但没有被执行
+fun_new()                                               # 调用fun_inner函数,执行这个内函数,实现新功能fun_1,fun_2
+"""
+
+"""
+# # 语法糖练习,这里只实现了单个功能的添加,后续需要学习装饰器工厂,实现一次语法糖添加多个功能
+# 
+# def fun_origin(fn_list):
+#     def fun_inner():
+#         print("这是原有功能")
+#         fn_list()
+#     return fun_inner
+# 
+# @fun_origin
+# def fun_1():                                # 这是需要添加的功能1
+#     print("这是新功能1")
+# fun_1()
+# 
+# @fun_origin
+# def fun_2():                                # 这是需要添加的功能2
+#     print("这是新功能2")
+# fun_2()
 """
