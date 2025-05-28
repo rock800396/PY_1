@@ -1,5 +1,5 @@
 """
-这是天上人间一号妹妹的代码练习
+这是天上人间一号妹妹的代码测试
 """
 
 """
@@ -104,7 +104,7 @@ len_f = None
 while AttemptCount < MaxInputCount:
     try:
         len_f = int(input("请输入要打印的斐波那契数列长度:"))
-        if len_f <= 0:                                       #如果输入值小于0,打印提示,计数器+1,程序继续执行,此时:else不会被执行;因为没有发生异常,所以异常处理代码不会被执行;会跳到while循环尾部判断输入次数是否超过最大值的if语句.如果此时尝试次数超过3次,if条件为真,会打印输入次数过多的信息并退出程序,sys.exit(2)是退出代码,2是错误码;如果此时尝试次数不超过3次,本次while循环结束,但没有退出while循环,继续从头开始while循环.
+        if len_f <= 0:                                       #如果输入值小于0,打印提示,计数器+1,程序继续执行,此时:else不会被执行;因为没有发生异常,所以异常处理代码不会被执行;会跳到while循环尾部判断输入次数是否超过最大值的if语句.如果此时尝试次数超过3次,if条件为真,会打印输入次数过                                                            多的信息并退出程序,sys.exit(2)是退出代码,2是错误码;如果此时尝试次数不超过3次,本次while循环结束,但没有退出while循环,继续从头开始while循环.
             print("输入必须为正整数,请重新输入!")
             AttemptCount += 1
         else:
@@ -138,27 +138,60 @@ def fun_origin(fn_list):               # 这是装饰函数(存疑),用于将fun
             fn()                               # 执行列表中的每个函数,fn_list是外函数fun_origin的局部变量(类型为函数列表),通过实参传入
     return fun_inner
 
-fun_new = fun_origin([fun_1,fun_2])       # 调用fun_origin函数,将fun_1,fun_2作为函数列表的值传入,返回fun_inner函数,注意,此时内函数被定义,但没有被执行
-fun_new()                                               # 调用fun_inner函数,执行这个内函数,实现新功能fun_1,fun_2
+fun_new = fun_origin([fun_1,fun_2])       # 调用fun_origin函数,将fun_1,fun_2作为函数列表的值传入,返回fun_inner函数
+fun_new()                                               # 调用fun_inner函数,执行新功能fun_1,fun_2
 """
 
 """
-# # 语法糖练习,这里只实现了单个功能的添加,后续需要学习装饰器工厂,实现一次语法糖添加多个功能
-# 
-# def fun_origin(fn_list):
-#     def fun_inner():
-#         print("这是原有功能")
-#         fn_list()
-#     return fun_inner
-# 
-# @fun_origin
-# def fun_1():                                # 这是需要添加的功能1
-#     print("这是新功能1")
-# fun_1()
-# 
-# @fun_origin
-# def fun_2():                                # 这是需要添加的功能2
-#     print("这是新功能2")
-# fun_2()
+# 语法糖代码练习----单个功能导入的代码实现
+def fun_origin(fn):               # 这是装饰函数,也是外函数,形参fn用于将新功能fun_1和fun_2作为实参传入
+    def fun_inner():               # 这是内函数,也是闭包函数
+        print("这是原有功能")
+        fn()                             # 这是外函数fun_origin的局部变量,通过传入实参(这里的实参是函数名,例如fun_1),执行了fun_1(),将fun_1的功能引入了装饰函数
+    return fun_inner
+
+@fun_origin                        # 语法糖
+def fun_1():                          # 这是需要添加的功能1
+    print("这是新功能1")
+fun_1()
+
+@fun_origin                        # 语法糖
+def fun_2():                          # 这是需要添加的功能2
+    print("这是新功能2")
+fun_2()
 """
-# 5.28 00:46 最新修改 11
+
+"""
+# 语法糖代码练习----多个功能导入的代码实现
+
+def fun_1():                        # 新功能1
+    print("这是新功能1")
+
+def fun_2():                        # 新功能2
+    print("这是新功能2")
+
+def fun_fac(*fn_tur):                                           # 这是装饰器工厂,可变参数fn_tur作为形参,以函数元组的形式接收外部新功能,在本例中,接收实参fun_1和fun_2
+    def fun_origin(fn):                                          # 这是装饰函数,形参fn用来接收原始定义的main_function函数对象(原有功能)
+        def fun_inner(*args, **kwargs):                   # 这是内函数,也是闭包函数,用于所有功能的最终实现
+            print("更新后(装饰后),系统的功能有:")        # 这是提示,显示更新后的系统的功能
+            result = fn(*args, **kwargs)                    # 这里实现系统基础功能,核心代码在这里实际执行,fn现在是最初定义的函数对象main_function,这个函数调用将实现原有功能
+            for fn_t in fn_tur:                                    # 这是新功能的实现,以for循环实现,注意,这里引用的是最外层的fn_tur,而不是装饰fun_origin的局部变量fn,这是与语法糖单功能导入或者装饰器/闭包函数的区别
+                fn_t()
+            return result
+        return fun_inner                                         # 这是fun_origin函数的返回值,返回fun_inner,注意缩进,它不是fun_inner函数的返回值
+    return fun_origin                                            # 这是fun_fac函数的返回值,返回fun_origin
+
+@fun_fac(fun_1,fun_2)                                      # 语法糖,以函数元组形式将fun_1,fun_2传入fun_fac函数
+def main_function():                                          # 这是原始的核心代码,实现基础功能,不允许修改,后续的功能,通过语法糖实现
+    print("这是原有功能(核心代码),不允许修改")
+    return "核心功能执行完毕!"                              # 返回值用来跟踪核心逻辑执行情况
+main_function()
+
+# 代码执行逻辑:
+# 1,代码首先执行到@fun_fac(fun_1,fun_2),程序发现了语法糖@fun_fac,将(fun_1,fun_2)这个函数元组作为参数传给形参*fn_tur,执行函数调用fun_fac(fun_1,fun_2),产生了返回值fun_origin函数对象
+# 2,def main_function()在定义的时候,main_function这个函数名指向了main_function这个原始函数对象
+# 3,Python 解释器会执行一个相当于main_function = fun_origin(main_function)的操作,注意这个表达式中,左侧的main_function是函数名(引用),fun_origin是以main_function为参数的函数,右侧括号中的main_function是最初定义的函数对象
+# 4,这个表达式的作用,是让函数名main_function不再指向原来最初定义的函数对象main_function,重新指向fun_origin(main_function)这个函数表达式的返回值,也就是fun_inner这个函数对象;同时,将最初定义的函数对象main_function传给fun_origin的形参fn
+# 5,main_function()现在相当于fun_inner(),fun_inner()可以传入可变参数*args和**kwargs,由于main_function()未定义参数,所以传入的参数为空,args是空元组,kwargs是空字典,可变参数设计,让它可以成为通用装饰器函数,可以匹配原始函数的任意参数
+
+"""
