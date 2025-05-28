@@ -124,44 +124,66 @@ if len_f > 0:
     print_fib(len_f)
 """
 
+"""
 # 装饰器和闭包代码练习
-def fun_1():                          # 这是被装饰函数1/原函数1,需要添加的功能
+def fun_1():                                # 这是需要添加的功能1
     print("这是新功能1")
-def fun_2():                          # 这是被装饰函数2/原函数2,需要添加的功能
+def fun_2():                                # 这是需要添加的功能2
     print("这是新功能2")
 
-def fun_origin(fn):               # 这是装饰函数,通过装饰器的方式,将fun_1和fun_2的功能添加进去,形参fn用于将新功能fun_1和fun_2作为实参传入
+def fun_origin(fn_list):               # 这是装饰函数(存疑),用于将fun_1和fun_2的功能添加进去,形参fn_list(类型为函数列表)用于将新功能fun_1和fun_2作为实参传入(以函数列表形式传入),可以使用*args来接收任意数量的函数参数
+    def fun_inner():                     # 这是内函数,也是闭包函数
+        print("这是原有功能")
+        for fn in fn_list:                 # 遍历传入的函数列表,逐一执行
+            fn()                               # 执行列表中的每个函数,fn_list是外函数fun_origin的局部变量(类型为函数列表),通过实参传入
+    return fun_inner
+
+fun_new = fun_origin([fun_1,fun_2])       # 调用fun_origin函数,将fun_1,fun_2作为函数列表的值传入,返回fun_inner函数
+fun_new()                                               # 调用fun_inner函数,执行新功能fun_1,fun_2
+"""
+
+"""
+# 语法糖代码练习----单个功能导入的代码实现
+def fun_origin(fn):               # 这是装饰函数,也是外函数,形参fn用于将新功能fun_1和fun_2作为实参传入
     def fun_inner():               # 这是内函数,也是闭包函数
         print("这是原有功能")
         fn()                             # 这是外函数fun_origin的局部变量,通过传入实参(这里的实参是函数名,例如fun_1),执行了fun_1(),将fun_1的功能引入了装饰函数
     return fun_inner
 
-fun_new = fun_origin(fun_1)        # 调用fun_origin函数,将fun_1传入,返回fun_inner函数
-fun_new()                                    # 调用fun_inner函数,执行新功能fun_1
-fun_new = fun_origin(fun_2)        # 调用fun_origin函数,将fun_2传入,返回fun_inner函数
-fun_new()                                    # 调用fun_inner函数,执行新功能fun_2
-
-# 装饰器和闭包代码练习
-def fun_1():                          # 这是被装饰函数1/原函数1,需要添加的功能
+@fun_origin                        # 语法糖
+def fun_1():                          # 这是需要添加的功能1
     print("这是新功能1")
-def fun_2():                          # 这是被装饰函数2/原函数2,需要添加的功能
+fun_1()
+
+@fun_origin                        # 语法糖
+def fun_2():                          # 这是需要添加的功能2
     print("这是新功能2")
-def fun_3():                          # 假设有更多功能
-    print("这是新功能3")
+fun_2()
+"""
 
-# 修改后的装饰函数，现在可以接收一个函数列表/元组
-def fun_origin_batch(fns_list): # 形参fns_list用于接收一个包含多个函数的列表或元组
-    def fun_inner_batch():      # 这是内函数，也是闭包函数
-        print("--- 这是原有功能（批处理开始）---")
-        for fn in fns_list:     # 遍历传入的函数列表，逐一执行
-            fn()                # 执行列表中的每个函数
-        print("--- 这是原有功能（批处理结束）---")
-    return fun_inner_batch
+# """
+# 语法糖代码练习----多个功能导入的代码实现
 
-# 在一次调用中增加所有的功能
-# 将fun_1和fun_2（甚至更多）作为列表传入fun_origin_batch
-fun_new_combined = fun_origin_batch([fun_1, fun_2, fun_3]) # 调用fun_origin_batch，传入函数列表，返回fun_inner_batch函数
-fun_new_combined()                                         # 调用fun_inner_batch函数，执行所有新功能
+def fun_1():                        # 新功能1
+    print("这是新功能1")
 
-print("\n--- 再次调用，验证批处理 ---")
-fun_new_combined() # 再次调用，会再次执行所有批处理功能
+def fun_2():                        # 新功能2
+    print("这是新功能2")
+
+def fun_fac(*fn_tur):                                           # 这是装饰器工厂,可变参数fn_tur作为形参,以函数元组的形式接收外部新功能,在本例中,接收实参fun_1和fun_2
+    def fun_origin(fn):                                          # 这是装饰函数
+        def fun_inner(*args, **kwargs):                   # 这是内函数,也是闭包函数,用于最终实现功能
+            print("更新后(装饰后),系统的功能有:")        # 这是提示,显示更新后的系统的功能
+            result = fn(*args, **kwargs)                    # 这里实现系统基础功能,核心代码在这里实际执行
+            for fn_t in fn_tur:                                    # 这是新功能的实现,以for循环实现,注意,这里引用的是最外层的fn_tur,而不是装饰fun_origin的局部变量fn,这是与语法糖单功能导入或者装饰器/闭包函数的区别
+                fn_t()
+            return result
+        return fun_inner                                         # 这是fun_origin函数的返回值,返回fun_inner,注意缩进,它不是fun_inner函数的返回值
+    return fun_origin                                            # 这是fun_fac函数的返回值,返回fun_origin
+
+@fun_fac(fun_1,fun_2)                         # 语法糖,以函数元组形式将fun_1,fun_2传入fun_fac函数
+def main_function():                                          # 这是原始的核心代码,实现基础功能,不允许修改,后续的功能,通过语法糖实现
+    print("这是原有功能(核心代码),不允许修改")
+    return "核心功能执行完毕!"                              # 返回值用来跟踪核心逻辑执行情况
+main_function()
+# """
