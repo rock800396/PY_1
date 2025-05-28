@@ -190,8 +190,8 @@ main_function()
 # 代码执行逻辑:
 # 1,代码首先执行到@fun_fac(fun_1,fun_2),程序发现了语法糖@fun_fac,将(fun_1,fun_2)这个函数元组作为参数传给形参*fn_tur,执行函数调用fun_fac(fun_1,fun_2),产生了返回值fun_origin函数对象
 # 2,def main_function()在定义的时候,main_function这个函数名指向了main_function这个原始函数对象
-# 3,Python 解释器会执行一个相当于main_function = fun_origin(main_function)的操作,注意这个表达式中,左侧的main_function是函数名(引用),fun_origin是函数对象,右侧括号中的main_function是最初定义的函数对象
-# 4,这个表达式的作用,是让函数名main_function不再指向原来最初定义的函数对象main_function,重新指向fun_origin(main_function)这个表达式的返回值,也就是fun_inner这个函数对象;同时,将最初定义的函数对象main_function传给fun_origin的形参fn
+# 3,Python 解释器会执行一个相当于main_function = fun_origin(main_function)的操作,注意这个表达式中,左侧的main_function是函数名(引用),fun_origin是以main_function为参数的函数,右侧括号中的main_function是最初定义的函数对象
+# 4,这个表达式的作用,是让函数名main_function不再指向原来最初定义的函数对象main_function,重新指向fun_origin(main_function)这个函数表达式的返回值,也就是fun_inner这个函数对象;同时,将最初定义的函数对象main_function传给fun_origin的形参fn
 # 5,main_function()现在相当于fun_inner(),fun_inner()可以传入可变参数*args和**kwargs,由于main_function()未定义参数,所以传入的参数为空,args是空元组,kwargs是空字典,可变参数设计,让它可以成为通用装饰器函数,可以匹配原始函数的任意参数
 
 """
