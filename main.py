@@ -215,3 +215,18 @@ fun_eat(Dog)                                       # 调用函数(接口)fun_eat
 fun_eat(Cat)                                        # 调用函数(接口)fun_eat,将Cat类作为参数传入
 # 以上代码,实现了统一的接口调用(fun_eat函数),根据不同的传入参数,实现了方法调用的多态性
 """
+
+"""
+# 魔法方法和单例模式练习
+class Singleton(object):
+    _instance = None                                           # 类属性,用于储存单例对象的引用
+    def __new__(cls, *args, **kwargs):                   # 魔法方法__new__()继承自父类object的魔法方法object.__new__(),用于创建Singleton类的实例,cls是类本身,在这里指Singleton类,对__new__()这个魔法方法进行重写,用来实现单例模式的功能
+        if not Singleton._instance :                         # 如果类属性_instance为空,说明还没有实例化对象
+            Singleton._instance = super().__new__(cls)     # 调用Singleton的父类object类的魔法方法__new__(),这个魔法方法的返回值是新创建的实例的引用,将其赋值给类属性_instance,_instance指向新创建的实例对象,成为这个单例对象的引用
+        return Singleton._instance
+si = Singleton()                                              # 对Singleton类进行实例化,创建单例对象si
+print("这是单例对象si的地址:", id(si))               # 输出单例对象si的地址,用于验证单例模式
+si_2 = Singleton()                                          # 对Singleton类进行实例化,创建单例对象si_2
+print("这是单例对象si_2的地址:", id(si_2))        # 输出单例对象si_2的地址,用于验证单例模式
+
+"""
