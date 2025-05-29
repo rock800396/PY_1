@@ -230,3 +230,10 @@ si_2 = Singleton()                                          # 对Singleton类进
 print("这是单例对象si_2的地址:", id(si_2))        # 输出单例对象si_2的地址,用于验证单例模式
 
 """
+
+"""
+# 文件操作代码练习
+file_test = open("test.txt", "w")                                   # 打开文件test.txt,以写入模式打开,如果文件不存在,则创建文件
+file_test.write("这是天上人间一号妹妹的测试文本!\n")    # 写入内容到文件中
+file_test.close()                                                            # 关闭文件,释放资源
+"""
