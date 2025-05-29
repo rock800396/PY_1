@@ -195,4 +195,23 @@ main_function()
 # 5,main_function()现在相当于fun_inner(),fun_inner()可以传入可变参数*args和**kwargs,由于main_function()未定义参数,所以传入的参数为空,args是空元组,kwargs是空字典,可变参数设计,让它可以成为通用装饰器函数,可以匹配原始函数的任意参数
 
 """
-# 最新推送测试
+
+"""
+# 这是多态性的代码练习
+class Animal(object):                               # 定义Animal类,继承自系统类/基类object
+    def eat(self):
+        print("我会吃东西")
+class Dog(Animal):                                  # 定义Dog类,继承自Animal类,是Animal类的子类
+    def eat(self):
+        print("我会吃屎")
+class Cat(Animal):                                   # 定义Cat类,继承自Animal类,是Animal类的子类
+    def eat(self):
+        print("我会吃老鼠")
+def fun_eat(animal_eat):                       # 定义通用接口(函数)fun_eat,形参animal_eat(类型为类名)用于接收传入的类名,在本例中,接收的实参可以是父类Animal,子类Dog和Cat
+    obj_eat = animal_eat()                      # 实例化传入的类名,obj_eat在实例化后成为对象
+    obj_eat.eat()                                     # 通过实例化后的对象obj_eat调用eat方法
+fun_eat(Animal)                                   # 调用函数(接口)fun_eat,将Animal类作为参数传入
+fun_eat(Dog)                                       # 调用函数(接口)fun_eat,将Dog类作为参数传入
+fun_eat(Cat)                                        # 调用函数(接口)fun_eat,将Cat类作为参数传入
+# 以上代码,实现了统一的接口调用(fun_eat函数),根据不同的传入参数,实现了方法调用的多态性
+"""
