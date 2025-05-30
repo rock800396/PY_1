@@ -238,10 +238,21 @@ file_test = open("test.txt", "w",encoding = "utf_8")    # 打开文件test.txt,�
 file_test.write("这是天上人间一号妹妹的测试文本!\n")    # 写入内容到文件中
 file_test.close()                                                            # 关闭文件,释放资源
 os.remove("test.txt")                                                   # 删除文件,释放资源,要查看test.txt,需要先注释本行,否则会删除文件
+# 通常,with open() as file是更推荐的写法,它自带文件关闭功能,不需要手动调用close()方法,其函数参数与open()函数相同
 """
 
 """
-# from _collections_abc import Iterable
-# # 迭代器和生成器代码练习
-# print(isinstance("天上人间一号妹妹", Iterable))  # 检查字符串是否可迭代,返回True
+# 迭代器和生成器代码练习
+from _collections_abc import Iterable,  Iterator
+str_1 = "天上人间一号妹妹"
+print(isinstance(str_1, Iterable))           # 检查字符串是否可迭代,返回True
+print(isinstance(str_1, Iterator))           # 检查字符串是否是迭代器,返回False
+print(dir(str_1))                                    # 查看属性str_1的所有属性和方法
+str_2 = iter(str_1)                                 # 将字符串转换为迭代器对象,注意,str_2不再是字符串类型,而是迭代器类型
+print(isinstance(str_2, Iterable))           # 检查迭代器是否可迭代,返回True
+print(isinstance(str_2, Iterator))           # 检查迭代器是否是迭代器,返回True
+print(dir(str_2))                                    # 查看迭代器str_2的所有属性和方法
+# 通过以上代码,可以看出,字符串是可迭代对象,但不是迭代器对象
+# 通过iter()函数,可以将可第迭代对象转化为迭代器对象
+# 通过查看可第迭代对象和迭代器对象的所有属性和方法,迭代器对象比可迭代对象对了__next__()方法
 """
