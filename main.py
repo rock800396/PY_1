@@ -233,7 +233,15 @@ print("这是单例对象si_2的地址:", id(si_2))        # 输出单例对象s
 
 """
 # 文件操作代码练习
-file_test = open("test.txt", "w")                                   # 打开文件test.txt,以写入模式打开,如果文件不存在,则创建文件
+import os                                                                   # os模块提供了与操作系统交互的功能,可以用于文件和目录操作
+file_test = open("test.txt", "w",encoding = "utf_8")    # 打开文件test.txt,以写入模式打开,如果文件不存在,则创建文件
 file_test.write("这是天上人间一号妹妹的测试文本!\n")    # 写入内容到文件中
 file_test.close()                                                            # 关闭文件,释放资源
+os.remove("test.txt")                                                   # 删除文件,释放资源,要查看test.txt,需要先注释本行,否则会删除文件
+"""
+
+"""
+# from _collections_abc import Iterable
+# # 迭代器和生成器代码练习
+# print(isinstance("天上人间一号妹妹", Iterable))  # 检查字符串是否可迭代,返回True
 """
