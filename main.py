@@ -346,3 +346,55 @@ if __name__ == "__main__":
     # thread_2.join()
     # print(f'程序结束时全局变量a的最终值：{a}')
 """
+
+"""
+# 进程间不共享全局变量演示
+from multiprocessing import Process
+li = []                                                                                  # 引入全局变量li,初始值为空,列表类型
+def fun_write(lof_li):                                                           # 对列表进行写操作
+    for i in range(lof_li):
+        li.append(i)
+    print("这是写入的列表",li)
+def fun_read():                                                                   # 对列表进行读操作
+    print("这是读取到的列表",li)
+if __name__ == "__main__":                                                # 设置主程序入口,本例中并无实际意义,只是为了养成良好的编程习惯
+    lenof_li = int(input("请输入列表的长度:"))                         # 控制列表长度
+    process_1 = Process(target=fun_write,args=(lenof_li,))   # 创建进程process_1,指定执行的函数为fun_write,将用户输入的长度参数(实参lenof_li)传给
+    process_2 = Process(target=fun_read)                            # 创建进程process_2,指定执行的函数为fun_read
+    process_1.start()                                                             # 启动进程process_1
+    process_1.join()                                                              # 阻塞进程,等待进程process_1执行完毕后,主进程才会继续执行,此处用于表示:即使执行写操作的process_1进程执行结束,后续的process_2依然无法读取到process_1写入全局变量li中的数据,这表明process_1和process_2不共享全局变量li
+    process_2.start()                                                             # 启动进程process_2
+"""
+
+"""
+# queue队列实现进程间通信代码练习
+from multiprocessing import Process,Queue                      # 这里需要注意,这种方式导入的Q队列用于进程间通信(开销更大,效率更低),如果是以from queue form Queue方式导入,则用于线程间通信(效率更高,但不能用于进程间通信)
+li = []                                                                                 # 引入全局变量li,初始值为空,列表类型
+q = Queue()                                                                       # 引入全局变量q,初始值为空,队列类型,用于进程间通信
+def fun_write(q_1):
+    for i in range(10):
+        li.append(i)                                                                # 向列表中添加数据,用于展示列表中有多少数据需要传到另一个进程process_2中
+        q_1.put(i)                                                                   # 向列表中添加的数据,同时也用put方法传到队列q_1中,用于进程间通信
+    print("这是进程process_1生成的列表,需要传到进程process_2中",li)
+    q_1.put(None)                                                               # 产生一个哨兵值,用于让process_2进程中知道数据已经传完了
+def fun_read(q_2):
+    while True:
+        item = q_2.get()                                                        # 尝试获取数据，如果队列为空会阻塞
+        if item is None:                                                         # 检查是否是哨兵值,如果是,代表数据已经传完了,退出循环
+            break
+        else:
+            li.append(item)
+    print("这是从进程process_1中通过Q队列传过来的数据",li)
+if __name__ == "__main__":                                                # 设置主程序入口,本例中并无实际意义,只是为了养成良好的编程习惯
+    process_1 = Process(target=fun_write,args=(q,))            # 创建进程process_1,指定执行的函数为fun_write,将实参q传给q_1,q_1成为队列类型,这个q_1只在进程process_1中使用
+    process_2 = Process(target=fun_read,args=(q,))             # 创建进程process_2,指定执行的函数为fun_read,将实参q传给q_2,q_2成为队列类型,这个q_2只在进程process_2中使用
+    process_1.start()                                                             # 启动进程process_1
+    process_2.start()
+    process_1.join()                                                              # 这里需要注意,之所以没有将这一行放在process_2.start()前面,是因为process_2进程中get()方法会默认阻塞,不会因为没有process_1.join() 而无法获取到数据,这和上一个"进程间不共享全局变量演示"中是不一样的
+    process_2.join()
+
+ # multiprocessing.Queue 的核心原理：
+ # q, q_1, q_2 等 Queue 对象,虽然在各自进程中是独立的Python实例,由于进程之间资源不共享而无法直接通信
+ # 但它们都作为代理/句柄,指向并操作着同一个由操作系统管理的底层进程间通信(IPC)通道(如管道)
+ # 数据在通过此通道传递时,会被自动序列化和反序列化,从而实现跨进程的通信,即便进程内存是隔离的
+"""
