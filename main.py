@@ -314,4 +314,30 @@ if __name__ == "__main__":                                # 主程序入口,本�
 
 # 如果设置守护进程thread_1.setDaemon(True)和thread_2.setDaemon(True),主线程执行结束后,子线程会被强制终止,无法看到两个子进程执行的结果
 # 注意,守护进程必须放在start()方法之前,而阻塞进程join()方法必须放在start()方法之后
+# 如果线程函数fun_1()带参数,可以在创建线程时进行指定,格式为:thread_1 = threading.Thread(target=fun_1,args=(1,2)),这里需要注意的是,参数是以元组形式传入,如果只有一个参数,需要在元组中加上逗号,例如:thread_1 = threading.Thread(target=fun_1,args=(1,))
+"""
+
+"""
+# 多线程资源竞争的代码练习
+import threading
+a = 0
+b = 5000000
+def add_1():
+    global a
+    for i in range(b):
+        a += 1
+    print(f'第一次累加的结果为：{a}')
+def add_2():
+    global a
+    for i in range(b):
+        a += 1
+    print(f'第二次累加的结果为：{a}')
+if __name__ == "__main__":
+    thread_1 = threading.Thread(target=add_1)
+    thread_2 = threading.Thread(target=add_2)
+    thread_2.start()
+    thread_1.start()
+    thread_1.join()
+    thread_2.join()
+    print(f'程序结束时全局变量a的最终值：{a}')
 """
