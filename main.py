@@ -320,24 +320,29 @@ if __name__ == "__main__":                                # 主程序入口,本�
 """
 # 多线程资源竞争的代码练习
 import threading
+lock = threading.Lock()
 a = 0
 b = 5000000
 def add_1():
     global a
+    lock.acquire()
     for i in range(b):
         a += 1
     print(f'第一次累加的结果为：{a}')
+    lock.release()
 def add_2():
     global a
+    lock.acquire()
     for i in range(b):
         a += 1
     print(f'第二次累加的结果为：{a}')
+    lock.release()
 if __name__ == "__main__":
     thread_1 = threading.Thread(target=add_1)
     thread_2 = threading.Thread(target=add_2)
     thread_2.start()
     thread_1.start()
-    thread_1.join()
-    thread_2.join()
-    print(f'程序结束时全局变量a的最终值：{a}')
+    # thread_1.join()
+    # thread_2.join()
+    # print(f'程序结束时全局变量a的最终值：{a}')
 """
