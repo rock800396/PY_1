@@ -409,27 +409,33 @@ print(f"2000-3200之间能被7整除,但不能被5整除的数有:{li}")
 print(f"2000-3200之间能被7整除,但不能被5整除的数有{len(li)}个")
 """
 
-# """
+"""
 # 代码练习2 计算给定数阶乘
+import  sys
+n = 0                                                 # 初始化n为0,用于接收用户输入的非负整数
 count_n = 0                                      # 限制输入次数为3次
-def factorial(n):                                 # 使用递归函数计算阶乘
+def factorial(n):                                 # 使用递归函数计算阶乘,注意这里的形参n是局部变量,与全局变量n无关,在函数调用时会传入实参,实参的值会覆盖形参的值
     if n == 1 or n == 0:
         return 1
     else:
         return n * factorial(n-1)
 if __name__ == "__main__":
-    # if n <= 0 and count_n < 3:
-    #     count_n += 1
-    #     print("输入错误,请输入一个正整数")
-    # else:
-    #     print("你是个犟种,输入一个正整数很难吗?滚!")
-    #     exit()
-    n = 0
-    while n <= 0 and count_n < 3:
-        count_n += 1
-        n = int(input("请输入一个正整数"))
-        if count_n >= 3:
-            print("你是个犟种,输入一个正整数很难吗?滚!")
-            exit()
+    while count_n < 3 :
+        try:
+            n = int(input("请输入一个非负整数:"))    # 接收用户输入的非负整数
+            if n < 0:                                                   # 如果输入的数小于0,则抛出异常
+                raise ValueError("输入必须为非负整数")       # 如果执行到这里,说明输入的是负数,抛出异常,break语句不会被执行,因为raise语句会抛出异常,程序会跳转到except语句块
+            break                                                                  # 如果执行到这里,说明输入有效,跳出while循环
+        except ValueError as e:                             # 捕获到输入不是非负整数的异常
+            count_n += 1
+            if count_n < 3:                                        # 如果输入次数小于3次,则提示用户重新输入
+                print(f"输入错误: {e},请重新输入!")     # 错误被捕获,程序会继续执行,本except块中的代码执行完后,会跳转到while循环的开头,重新执行while循环,直到输入正确或者输入次数超过3次
+            else:                                                        # 如果输入次数超过3次,则退出程序
+                print("输入错误次数过多,程序退出!")
+                sys.exit(1)                                                 # 用不同的错误码来区分程序退出的原因,错误码"1"代表输入错误次数过多
+        except Exception as e:                              # 捕获其他异常
+            count_n += 1                                         # 这里依然记录输入次数,不影响程序逻辑,用于跟踪计数器变量的变化情况
+            print(f"发生未知错误: {e},程序退出!")
+            sys.exit(2)                                                     # 用不同的错误码来区分程序退出的原因,错误码"2"代表未知错误
     print(f"{n}的阶乘 {n}! = {factorial(n)}")
-# """
+"""
