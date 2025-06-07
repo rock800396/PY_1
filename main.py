@@ -398,3 +398,38 @@ if __name__ == "__main__":                                                # 设�
  # 但它们都作为代理/句柄,指向并操作着同一个由操作系统管理的底层进程间通信(IPC)通道(如管道)
  # 数据在通过此通道传递时,会被自动序列化和反序列化,从而实现跨进程的通信,即便进程内存是隔离的
 """
+
+"""
+# 代码练习1 找出并打印2000-3200之间(包含)能被7整除不能被5整除的数
+li = []
+for i in range(2000,3201):
+    if i%7 == 0 and i%5 != 0:
+        li.append(i)
+print(f"2000-3200之间能被7整除,但不能被5整除的数有:{li}")
+print(f"2000-3200之间能被7整除,但不能被5整除的数有{len(li)}个")
+"""
+
+# """
+# 代码练习2 计算给定数阶乘
+count_n = 0                                      # 限制输入次数为3次
+def factorial(n):                                 # 使用递归函数计算阶乘
+    if n == 1 or n == 0:
+        return 1
+    else:
+        return n * factorial(n-1)
+if __name__ == "__main__":
+    # if n <= 0 and count_n < 3:
+    #     count_n += 1
+    #     print("输入错误,请输入一个正整数")
+    # else:
+    #     print("你是个犟种,输入一个正整数很难吗?滚!")
+    #     exit()
+    n = 0
+    while n <= 0 and count_n < 3:
+        count_n += 1
+        n = int(input("请输入一个正整数"))
+        if count_n >= 3:
+            print("你是个犟种,输入一个正整数很难吗?滚!")
+            exit()
+    print(f"{n}的阶乘 {n}! = {factorial(n)}")
+# """
