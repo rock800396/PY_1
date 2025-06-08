@@ -468,8 +468,7 @@ if __name__ == "__main__":
 
 """
 # 代码练习5 构造一个包含2个方法的类,一个用于获取控制台输入的字符串,另一个用于将字符串转换为大写并打印输出
-class StrToUpper(object):
-    """这是一个包含两个方法的类,一个用于获取控制台输入的字符串,另一个用于将字符串转换为大写并打印输出"""
+class StrToUpper(object):                                       # 这是一个包含两个方法的类,一个用于获取控制台输入的字符串,另一个用于将字符串转换为大写并打印输出'
     def __init__(self):
         self.str_input = ""                                             # 初始化一个空字符串,用于存储用户输入的字符串
     def get_input(self):
@@ -481,4 +480,15 @@ if __name__ == "__main__":                                      # 主程序入�
     obj.get_input()                                                     # 调用实例方法get_input()获取用户输入的字符串
     obj.print_upper()                                                 # 调用实例方法print_upper()将字符串转换为大写并打印输出
 # 执行逻辑:get_input方法获得字符串输入后,将其存储到实例变量str_input中,调用print_upper方法,将str_input转换为大写并打印输出
+"""
+
+"""
+# 代码练习6 math.sqrt函数的使用
+import math                                               # 导入math模块,用于数学计算
+a = 50
+b = 30
+c = []                                                          # 接收外部输入
+value = []
+for i in input("请输入一组数字,以逗号分隔:").split(","):             # 接收用户输入的数字,以逗号分隔,并将其转换为列表
+    c.append(float(i))                                                                  # 将输入的数字转换为浮点数,并添加到列表c中
 """
