@@ -358,8 +358,8 @@ def fun_write(lof_li):                                                          
 def fun_read():                                                                   # 对列表进行读操作
     print("这是读取到的列表",li)
 if __name__ == "__main__":                                                # 设置主程序入口,本例中并无实际意义,只是为了养成良好的编程习惯
-    lenof_li = int(input("请输入列表的长度:"))                         # 控制列表长度
-    process_1 = Process(target=fun_write,args=(lenof_li,))   # 创建进程process_1,指定执行的函数为fun_write,将用户输入的长度参数(实参lenof_li)传给
+    len_of_li = int(input("请输入列表的长度:"))                         # 控制列表长度
+    process_1 = Process(target=fun_write,args=(len_of_li,))   # 创建进程process_1,指定执行的函数为fun_write,将用户输入的长度参数(实参len_of_li)传给
     process_2 = Process(target=fun_read)                            # 创建进程process_2,指定执行的函数为fun_read
     process_1.start()                                                             # 启动进程process_1
     process_1.join()                                                              # 阻塞进程,等待进程process_1执行完毕后,主进程才会继续执行,此处用于表示:即使执行写操作的process_1进程执行结束,后续的process_2依然无法读取到process_1写入全局变量li中的数据,这表明process_1和process_2不共享全局变量li
@@ -454,3 +454,28 @@ if __name__ == "__main__":
     fun_dict(n)                                                           # 调用函数fun_dict(n),生成字典
     print(f"长度为{n}的字典为{dict_n}:")
 """
+
+"""
+# 代码练习4 使用正则表达式从序列中提取数字,并以默认的列表形式输出
+import re                                         # 导入正则表达式模块
+def ext_num(seq):                           # 定义提取函数ext_num,形参seq用于接收传入的序列
+    pa = r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)"                # 定义正则表达式,匹配数字
+    return re.findall(pa,seq)             # 使用re.findall()方法提取序列中的数字,re.findall(pa,seq)的值是一个数字列表,这个列表作为返回值返回给调用者
+if __name__ == "__main__":            # 主程序入口,养成好习惯
+    seq = input("请输入任意一个需要提取的序列")        # 接收用户输入的序列,可以是字符串、列表等,只要能被正则表达式匹配即可
+    print(f"提取到的数字序列为:{ext_num(seq)}")          # 调用提取函数ext_num(seq),提取序列中的数字,并打印输出,这里注意形参和实参使用同一个变量名seq,但实际并不是同一个东西
+"""
+
+# """
+# 代码练习5 构造一个包含2个方法的类,一个用于获取控制台输入的字符串,另一个用于将字符串转换为大写并打印输出
+class StrToUpper:
+    """这是一个包含两个方法的类,一个用于获取控制台输入的字符串,另一个用于将字符串转换为大写并打印输出"""
+    def __init__(self):
+        self.str_input = ""  # 初始化一个空字符串,用于存储用户输入的字符串
+
+    def get_input(self):
+        self.str_input = input("请输入一个字符串:")  # 获取用户输入的字符串,并存储到实例变量str_input中
+
+    def print_upper(self):
+        print(f"转换为大写后的字符串为: {self.str_input.upper()}")  # 将实例变量str_input转换为大写并打印输出
+# """
