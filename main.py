@@ -455,27 +455,30 @@ if __name__ == "__main__":
     print(f"长度为{n}的字典为{dict_n}:")
 """
 
-"""
-# 代码练习4 使用正则表达式从序列中提取数字,并以默认的列表形式输出
-import re                                         # 导入正则表达式模块
-def ext_num(seq):                           # 定义提取函数ext_num,形参seq用于接收传入的序列
-    pa = r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)"                # 定义正则表达式,匹配数字
-    return re.findall(pa,seq)             # 使用re.findall()方法提取序列中的数字,re.findall(pa,seq)的值是一个数字列表,这个列表作为返回值返回给调用者
-if __name__ == "__main__":            # 主程序入口,养成好习惯
-    seq = input("请输入任意一个需要提取的序列")        # 接收用户输入的序列,可以是字符串、列表等,只要能被正则表达式匹配即可
-    print(f"提取到的数字序列为:{ext_num(seq)}")          # 调用提取函数ext_num(seq),提取序列中的数字,并打印输出,这里注意形参和实参使用同一个变量名seq,但实际并不是同一个东西
-"""
-
 # """
+# # 代码练习4 使用正则表达式从序列中提取数字,并以默认的列表形式输出
+# import re                                         # 导入正则表达式模块
+# def ext_num(seq):                           # 定义提取函数ext_num,形参seq用于接收传入的序列
+#     pa = r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)"                # 定义正则表达式,匹配数字
+#     return re.findall(pa,seq)             # 使用re.findall()方法提取序列中的数字,re.findall(pa,seq)的值是一个数字列表,这个列表作为返回值返回给调用者
+# if __name__ == "__main__":            # 主程序入口,养成好习惯
+#     seq = input("请输入任意一个需要提取的序列")        # 接收用户输入的序列,可以是字符串、列表等,只要能被正则表达式匹配即可
+#     print(f"提取到的数字序列为:{ext_num(seq)}")          # 调用提取函数ext_num(seq),提取序列中的数字,并打印输出,这里注意形参和实参使用同一个变量名seq,但实际并不是同一个东西
+# """
+
+"""
 # 代码练习5 构造一个包含2个方法的类,一个用于获取控制台输入的字符串,另一个用于将字符串转换为大写并打印输出
-class StrToUpper:
+class StrToUpper(object):
     """这是一个包含两个方法的类,一个用于获取控制台输入的字符串,另一个用于将字符串转换为大写并打印输出"""
     def __init__(self):
-        self.str_input = ""  # 初始化一个空字符串,用于存储用户输入的字符串
-
+        self.str_input = ""                                             # 初始化一个空字符串,用于存储用户输入的字符串
     def get_input(self):
-        self.str_input = input("请输入一个字符串:")  # 获取用户输入的字符串,并存储到实例变量str_input中
-
+        self.str_input = input("请输入一个字符串:")     # 获取用户输入的字符串,并存储到实例变量str_input中
     def print_upper(self):
         print(f"转换为大写后的字符串为: {self.str_input.upper()}")  # 将实例变量str_input转换为大写并打印输出
-# """
+if __name__ == "__main__":                                      # 主程序入口,养成好习惯
+    obj = StrToUpper()                                              # 创建StrToUpper类的实例对象obj
+    obj.get_input()                                                     # 调用实例方法get_input()获取用户输入的字符串
+    obj.print_upper()                                                 # 调用实例方法print_upper()将字符串转换为大写并打印输出
+# 执行逻辑:get_input方法获得字符串输入后,将其存储到实例变量str_input中,调用print_upper方法,将str_input转换为大写并打印输出
+"""
