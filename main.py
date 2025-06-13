@@ -499,10 +499,14 @@ print(f"计算结果为:{value}")
 
 # """
 # 代码练习7 二维数组的生成
-lst = []
-def arr(par_1,par_2):                        #定义数组生成函数,形参par_1和par_2是数组的行和列
-    for i in range(par_1):
-        for j in range(par_2):
-            lst.append(i*j)
-
+lst = []                                              # 定义一个数组lst,这个数组是一个二维数组,其中的元素是一维数组
+def arr(par_1,par_2):                        # 定义数组生成函数,形参par_1和par_2是数组的行和列
+    for i in range(par_1):                   # 用循环处理行
+        lst.append([])                           # 向二维数组列表lst中添加一个空的一维数组,这个一维数组成为lst[i]
+        for j in range(par_2):               # 用循环处理列
+            lst[i].append(i*j)                  # 向二维数组列表lst中的元素lst[i]添加j个元素,每个元素的值为i*j,lst[i]成为一个有j个元素的一维数组
+        print(f"数组第{i+1}行为:{lst[i]}")      # 这纯粹是为了输出美观,在数组超过一行时,可以直观看到行和列的编号
+if __name__ == "__main__":             # 主程序入口,养成好习惯
+    arr(10,10)
+    print(f"二维数组为:{lst}")
 # """
