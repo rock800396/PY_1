@@ -497,7 +497,7 @@ for i in c :
 print(f"计算结果为:{value}")
 """
 
-# """
+"""
 # 代码练习7 二维数组的生成
 lst = []                                              # 定义一个数组lst,这个数组是一个二维数组,其中的元素是一维数组
 def arr(par_1,par_2):                        # 定义数组生成函数,形参par_1和par_2是数组的行和列
@@ -509,4 +509,18 @@ def arr(par_1,par_2):                        # 定义数组生成函数,形参pa
 if __name__ == "__main__":             # 主程序入口,养成好习惯
     arr(10,10)
     print(f"二维数组为:{lst}")
+"""
+
+# """
+# 代码练习8 对随机输入的单词按字母顺序重排序,输入分隔符为","
+# 假设输出字符串为: SVPN,Cherry,Chatbox,VSCode,PyCharm,github,Docker
+wor_lst = [x for x in input("请输入一组单词,以逗号分隔:").split(",")]           # 接收用户输入的单词,以逗号分隔,并将其转换为列表
+wor_lst.sort()                                                                                                 # 对列表中的单词按字母顺序排序
+print(f"按字母顺序排序后的单词列表为:{wor_lst}")                                       # 这种方式输出的是字符串列表,与原格式不同
+print(",".join(wor_lst))                                                                                   # 这种方式输出的是字符串,与原格式相同,使用join()方法将列表中的元素连接成一个字符串,以逗号分隔
+wor_lst = [x for x in input("请输入一组单词,以逗号分隔:").split(",")]           # 重新接收相同的用户输入,以便形成对比(执行结果相同,但执行过程中wor_lst的值不一样)
+# wor_lst.sort(key=str.lower)                                                                       # 这一行会导致类型不匹配警告,用下一行代替
+wor_lst.sort(key=lambda x: x.lower())                                                         # 对列表中的单词按字母顺序排序,不区分大小写,使用匿名函数实现
+print(f"不区分大小写排序后的单词列表为:{wor_lst}")
+print(",".join(wor_lst))
 # """
