@@ -488,11 +488,21 @@ import math                                               # 导入math模块,用
 a = 50
 b = 30
 c = []                                                          # 接收外部输入
-value = []
+value = []                                                   # 存储输出数据
 for i in input("请输入一组数字,以逗号分隔:").split(","):             # 接收用户输入的数字,以逗号分隔,并将其转换为列表
-    c.append(float(i))                                                                  # 将输入的数字转换为浮点数,并添加到列表c中
+    c.append(float(i))                                                            # 将输入的数字转换为浮点数,并添加到列表c中
+for i in c :
+    i = int(math.sqrt(2*a*i/b))                                               # 根据公式计算并将结果转化为int整型
+    value.append(i)
+print(f"计算结果为:{value}")
 """
 
-"""
-# 代码练习7
-"""
+# """
+# 代码练习7 二维数组的生成
+lst = []
+def arr(par_1,par_2):                        #定义数组生成函数,形参par_1和par_2是数组的行和列
+    for i in range(par_1):
+        for j in range(par_2):
+            lst.append(i*j)
+
+# """
