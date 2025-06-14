@@ -511,7 +511,7 @@ if __name__ == "__main__":             # 主程序入口,养成好习惯
     print(f"二维数组为:{lst}")
 """
 
-# """
+"""
 # 代码练习8 对随机输入的单词按字母顺序重排序,输入分隔符为","
 # 假设输出字符串为: SVPN,Cherry,Chatbox,VSCode,PyCharm,github,Docker
 wor_lst = [x for x in input("请输入一组单词,以逗号分隔:").split(",")]           # 接收用户输入的单词,以逗号分隔,并将其转换为列表
@@ -523,4 +523,17 @@ wor_lst = [x for x in input("请输入一组单词,以逗号分隔:").split(",")
 wor_lst.sort(key=lambda x: x.lower())                                                         # 对列表中的单词按字母顺序排序,不区分大小写,使用匿名函数实现
 print(f"不区分大小写排序后的单词列表为:{wor_lst}")
 print(",".join(wor_lst))
-# """
+"""
+
+"""
+# 代码练习9,接收任意输入序列,并将其中的小写字母转换为大写字母并打印
+import  re
+seq = input("请输入任意一个需要转换的序列:")          # 接收用户输入的序列
+print(f"转换后的序列为: {seq.upper()}")                       # 将输入的序列转换为大写字母并打印输出
+pattern = r'[a-zA-Z]'                                                    # 定义一个只匹配字母的正则表达式
+matches = re.findall(pattern, seq)                             # 使用re.findall()方法提取序列中的字母,返回一个列表
+con = "".join(matches)                                                # 用.join方法将列表中的字母连接成一个字符串,""表示连接符为空,也就是不做分隔
+str_up = con.upper()                                                   # 将连接后的字符串转换为大写字母
+print(f"仅提取字母并转换为大写: {str_up}")                 # 打印输出转换后的字符串
+print(f"仅提取字母并转换为大写: {''.join(re.findall(pattern,seq)).upper()}")          # 这是将多个步骤合并为一行的写法,较为复杂,容易出错
+"""
