@@ -605,3 +605,21 @@ print(f"1000-3000中,所有位数均为偶数的数字有:",",".join(pri_lst))
 #     if i.isdigit():
 #         num_dig += 1
 # print(f"大写字母的个数为:{num_up}\n小写字母的个数为:{num_low}\n数字的个数为:{num_dig}")
+
+# 代码练习15 给定一个范围在1-9的正整数a,计算算式a+aa+aaa+...的值,算式的项数为n,a和n通过形参赋值
+# def fun_count(a,n):                                           # 注意,这里没有对a和n的取值范围做判断,实际中是不合适的
+#     if n == 0:                                                      # 如果算式项数为0,无论a是什么值都是空算式
+#         return 0
+#     else:
+#         return a + fun_count(a*10,n-1)                 # 计算第n项的值,这个递归函数的设计是难点,可以考虑使用for循环来实现
+# if __name__ == "__main__":
+#     a = 4                                                            # a和n的值作为实参传入fun_count()函数,通过改变a和n的值来改变算式
+#     n = 9
+#     # 实现方法1如下
+#     result = 0
+#     for i in range(1,n+1):
+#         result += fun_count(a,i)
+#     print(f"计算结果为:{result}")
+#     # 实现方法2如下
+#     result = sum(fun_count(a, i) for i in range(1, n + 1))          #更高效的方法,使用了内置函数sum
+#     print(f"计算结果为:{result}")
