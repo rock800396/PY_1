@@ -526,7 +526,7 @@ print(",".join(wor_lst))
 """
 
 """
-# 代码练习9,接收任意输入序列,并将其中的小写字母转换为大写字母并打印
+# 代码练习9 接收任意输入序列,并将其中的小写字母转换为大写字母并打印
 import  re
 seq = input("请输入任意一个需要转换的序列:")          # 接收用户输入的序列
 print(f"转换后的序列为: {seq.upper()}")                       # 将输入的序列转换为大写字母并打印输出
@@ -536,4 +536,14 @@ con = "".join(matches)                                                # 用.join
 str_up = con.upper()                                                   # 将连接后的字符串转换为大写字母
 print(f"仅提取字母并转换为大写: {str_up}")                 # 打印输出转换后的字符串
 print(f"仅提取字母并转换为大写: {''.join(re.findall(pattern,seq)).upper()}")          # 这是将多个步骤合并为一行的写法,较为复杂,容易出错
+"""
+
+"""
+# 代码练习10 删除重复单词(空格分隔)并重排序
+# 假设输入序列为: Hello World and hello girl and hello boy and hello man
+words = [word for word in input("请输入单词序列:").split(" ")]
+print(" ".join(sorted(list(set(words)))))                # set将words列表转换为集合,利用集合的元素唯一性去重;list将集合重新转为列表,因为集合是无序的,不能排序;sorted()是系统自带方法,参数可以是任何可迭代对象,返回值是排序后的对象,原对象不变,这是和列表方式sort()的重要区别;最后," "调用join方法,使用空格将排序后的列表元素(单词)连接起来,保持原来的样式
+# words = list(set(words))                                   # 这是另一种方法,使用sort()方法来代替sorted()方法
+# words.sort()
+# print(" ".join(words))
 """
