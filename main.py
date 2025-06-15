@@ -623,3 +623,24 @@ print(f"1000-3000中,所有位数均为偶数的数字有:",",".join(pri_lst))
 #     # 实现方法2如下
 #     result = sum(fun_count(a, i) for i in range(1, n + 1))          #更高效的方法,使用了内置函数sum
 #     print(f"计算结果为:{result}")
+
+# 代码练习-网络爬虫-1
+import requests
+import re
+import sys
+pattern = r'^(https?://)?([a-zA-Z0-9.-]+)(:[0-9]+)?(/.*)?$'                                                                                     # 检查网址合法性的正则表达式,全局变量
+IP_PATTERN = r'^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'      # 检查IP地址合法性的正则表达式,只支持IPv4地址
+if __name__ == "__main__":                                                             # 主程序入口
+    while True:                                                                                    # 使用while循环,直到用户输入合法的URL
+        try:
+            url = input("请输入需要爬取的URL:")                                           # 接收用户输入的URL
+            if re.match(pattern, url) is None:                                                # 如果网址不合法,则抛出异常
+                raise ValueError("输入的网址不合法,请检查后重新输入!")       # 抛出异常,提示用户输入的网址不合法,会跳转到except语句块
+            response = requests.get(url)                                                       # 使用requests库发送GET请求,获取网页内容
+            print(f"获取的请求内容为:\n{response.text}")                              # 打印获取的网页内容,换行只是为了美观
+            break                                                                                             # 如果获取成功,则跳出while循环,否则会陷入死循环
+        except ValueError as e:                                                                    # 捕获异常
+            print(f"发生错误: {e}")                                                                    # 打印异常信息
+        except Exception as e:                                                                      # 捕获其他异常
+            print(f"发生未知错误: {e}")                                                             # 打印异常信息
+            sys.exit(2)                                                                                      # 退出程序,错误码为2用来跟踪未知错误
