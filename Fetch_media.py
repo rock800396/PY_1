@@ -1,12 +1,13 @@
 
 # -----------------------------------爬虫实践和代码练习,我要把它做成一个强大的爬虫!------------------------------------------ #
-
+from fake_useragent import UserAgent
+# from urllib.parse import quote,unquote                                                         # 地址编码和解码,备用
 import requests
 import re
 import sys
 import os
 if __name__ == "__main__":                                                                               # 主程序入口
-    pattern = r'^(https?://)?([a-zA-Z0-9.-]+)(:[0-9]+)?(/.*)?$'                                 # 检查网址合法性的正则表达式,全局变量
+    pattern = r'^(https?://)?([a-zA-Z0-9.-]+)(:[0-9]+)?(/.*)?$'                                 # 检查网址合法性的正则表达式
     file_path_music = r"E:\Fetch resource\Music"
     music_name = "我的微笑.mp3"
     file_path_video = r"E:\Fetch resource\Video"
@@ -30,9 +31,11 @@ if __name__ == "__main__":                                                      
             url = input("请输入需要爬取的URL:")                                                         # 接收用户输入的URL
             if re.match(pattern,url) is None:                                                              # 如果网址不合法,则抛出异常
                 raise ValueError("输入的网址不合法,请检查后重新输入!")                         # 抛出异常,提示用户输入的网址不合法,会跳转到except语句块,try块后面的语句不会执行
-            headers = {"User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" , "Referer" : "https://www.baidu.com/"}
+            # headers = {"User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" , "Referer" : "https://www.baidu.com/"}
+            headers = {"User-Agent" : UserAgent().random , "Referer" : "https://www.baidu.com/"}
             """
             构建请求头,User-Agent参数用于伪装成用户浏览器(部分网站会反爬虫),Referer参数用于伪装重定向前来自于可信地址百度
+            UserAgent().random构建了一个随机的User-Agent池,如果向一个服务器发送大量请求,这样做可以避免被系统判定为爬虫
             """
             response = requests.get(url,headers = headers)                                      # 使用requests库发送GET请求,获取网页内容,注意:这里没有检查url的协议头,符合正则规则但没有带协议头的网址,例如www.baidu.com,还需要加上协议头
             # for response_history in response.history:                                              # 用于检测重定向的历史路径,可能需要先禁用request的自动重定向,暂时不用
@@ -41,6 +44,7 @@ if __name__ == "__main__":                                                      
             # print(f"获取的请求内容为:\n{response.content.decode()}")                      # 这种方式更优秀,会将content获取的二进制内容转为utf_8格式,中文不会成为乱码
             # print("返回长度为:",len(response.content.decode()))                              # 检查返回的响应长度,用于调试
             # print(f"请求头信息为:{response.request.headers}")                                 # 检查请求头信息,用于调试
+            # print(f"本次请求虚拟的User-Agent为:{UserAgent().random}")                  # 跟踪随机User-Agent池,用于调试
             with open(full_path_picture,"wb") as f:                                                    # 保存爬取的媒体文件,根据文件类型,使用不同的参数
                 f.write(response.content)
             print(f"恭喜大侠!文件已成功下载,位置: {full_path_picture}")
