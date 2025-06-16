@@ -30,12 +30,20 @@ if __name__ == "__main__":                                                      
             url = input("请输入需要爬取的URL:")                                                         # 接收用户输入的URL
             if re.match(pattern,url) is None:                                                              # 如果网址不合法,则抛出异常
                 raise ValueError("输入的网址不合法,请检查后重新输入!")                         # 抛出异常,提示用户输入的网址不合法,会跳转到except语句块,try块后面的语句不会执行
-            response = requests.get(url)                                                                   # 使用requests库发送GET请求,获取网页内容,注意:这里没有检查协议头,符合正则规则但没有带协议头的网址,例如www.baidu.com,还需要加上协议头
+            headers = {"User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" , "Referer" : "https://www.baidu.com/"}
+            """
+            构建请求头,User-Agent参数用于伪装成用户浏览器(部分网站会反爬虫),Referer参数用于伪装重定向前来自于可信地址百度
+            """
+            response = requests.get(url,headers = headers)                                      # 使用requests库发送GET请求,获取网页内容,注意:这里没有检查url的协议头,符合正则规则但没有带协议头的网址,例如www.baidu.com,还需要加上协议头
+            # for response_history in response.history:                                              # 用于检测重定向的历史路径,可能需要先禁用request的自动重定向,暂时不用
+            #     print(f"重定向路径为: {response_history.url}\n")
             # print(f"获取的请求内容为:\n{response.text}")                                          # 打印获取的网页内容,换行只是为了美观,如果网站不是utf-8格式,中文将显示为乱码
             # print(f"获取的请求内容为:\n{response.content.decode()}")                      # 这种方式更优秀,会将content获取的二进制内容转为utf_8格式,中文不会成为乱码
-            with open(full_path_music,"wb") as f:
+            # print("返回长度为:",len(response.content.decode()))                              # 检查返回的响应长度,用于调试
+            # print(f"请求头信息为:{response.request.headers}")                                 # 检查请求头信息,用于调试
+            with open(full_path_picture,"wb") as f:                                                    # 保存爬取的媒体文件,根据文件类型,使用不同的参数
                 f.write(response.content)
-            print(f"恭喜大侠!文件已成功下载,位置: {full_path_music}")
+            print(f"恭喜大侠!文件已成功下载,位置: {full_path_picture}")
             break                                                                                                     # 如果获取成功,则跳出while循环,否则会陷入死循环
         except ValueError as e:                                                                               # 捕获异常
             print(f"发生错误: {e}")                                                                              # 打印异常信息,这个except块处理结束后,try...except执行结束,重新
