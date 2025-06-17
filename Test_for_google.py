@@ -1,3 +1,6 @@
+
+# ----------------这是一个基于Google Custom Search引擎的关键词搜索/翻译实现-------------------
+
 from googleapiclient.discovery import build
 from google.cloud import translate_v2 as translate
 import sys
