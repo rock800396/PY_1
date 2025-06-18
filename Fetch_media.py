@@ -56,7 +56,7 @@ def get_page_with_selenium_fallback(target_url, user_agent_str,proxy_address=Non
         print(f"Selenium页面加载完成（等待最长{wait_timeout}秒）。")
         selenium_html_content = driver.page_source                                      # Selenium获取的是字符串
         print("Selenium成功获取页面！")                                                           # 执行到这里都没有发生异常,说明成功获取页面
-        return selenium_html_content.encode('utf-8')                                     # 将字符串编码为二进制返回,主要是为了与response.content格式一致,可以被with open语句处理
+        return selenium_html_content.encode('utf-8')                                      # 将字符串编码转为二进制返回,主要是为了与response.content格式一致,可以被with open语句处理
     except Exception as e:
         print(f"Selenium访问失败: {e}")
         return None                                                                                             # 访问失败,结束函数执行并返回None
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     selenium_proxy_address = "http://127.0.0.1:10090"                            # Selenium使用的代理地址,在调用Selenium辅助函数get_page_with_selenium_fallback函数时作为实参传入
 
     # ----------默认设置为False,保持现有逻辑,如果设置为 True ,直接跳过request尝试,使用Selenium---------- #
-    use_selenium_directly = True
+    use_selenium_directly = False
 
     while True:                                                                                                 # 使用while循环,直到用户输入合法的URL
         url = input("请输入需要爬取的URL:")                                                    # 接收用户输入的URL
@@ -135,7 +135,7 @@ if __name__ == "__main__":
                 time.sleep(random.uniform(1, 3))                                     # 随机延时1到3秒,模拟人类行为,防止请求过快被封IP
                 response = session.get(url,timeout=10,proxies=my_proxies)         # 使用session发送GET请求,比直接使用requests.get()更合适,session是会话级请求,会自动处理cookies,更适合需要多次请求的场景
                 response.raise_for_status()                                                              # 如果状态码不是2xx,会抛出HTTPError异常,注意,30X重定向会被request模块自动处理,不会抛出异常
-                final_content_to_save = response.content                                     # requests获取的内容是二进制数据
+                final_content_to_save = response.content                                     # 保存获取的内容
                 print("requests成功获取页面！")                                                      # 到这里都没有发生异常,说明成功获取页面
                 break                                                                                                  # requests成功，跳出循环
 
