@@ -87,7 +87,9 @@ if __name__ == "__main__":
         "https": "http://127.0.0.1:10090", # HTTPS请求也通过这个HTTP代理
     }
     selenium_proxy_address = "http://127.0.0.1:10090"                            # Selenium使用的代理地址,在调用Selenium辅助函数get_page_with_selenium_fallback函数时作为实参传入
-    use_selenium_directly = True                                                                 # 默认设置为False,保持现有逻辑,如果设置为 True ,直接跳过request尝试,使用Selenium
+
+    # ----------默认设置为False,保持现有逻辑,如果设置为 True ,直接跳过request尝试,使用Selenium---------- #
+    use_selenium_directly = True
 
     while True:                                                                                                 # 使用while循环,直到用户输入合法的URL
         url = input("请输入需要爬取的URL:")                                                    # 接收用户输入的URL
