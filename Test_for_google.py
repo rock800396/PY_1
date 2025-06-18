@@ -8,7 +8,7 @@ import os
 import httplib2
 
 # --- 配置你的 API Key 和 CX ID ---
-API_KEY = "AIzaSyAYTvCOra6t1btoVRLFe9oPmtN0rUySyGI"
+API_KEY = "这个输入API key"
 CX_ID = "d2f7c3453d86144f2"
 
 # --- 配置你的代理信息 ---
