@@ -1,12 +1,11 @@
 # -----------------------------------爬虫实践和代码练习,我要把它做成一个强大的爬虫!------------------------------------------ #
-from fake_useragent import UserAgent                                            # 导入User-Agent池模块
 import requests                                                                                    # 导入requests库
 import re                                                                                               # 导入正则表达式库
 import sys                                                                                             # 导入sys库,用于系统操作
 import os                                                                                              # 导入os库,用于文件和目录操作
 import time                                                                                           # 导入time库
 import random                                                                                     # 导入random库
-import urllib.parse                                                                                 # 导入urllib.parse库,用于解析URL,动态获取Host和Referer
+import urllib.parse                                                                                # 导入urllib.parse库,用于解析URL,动态获取Host和Referer
 
 # ----------------------------------- 引入Selenium库 ------------------------------------------ #
 from selenium import webdriver
@@ -15,10 +14,68 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
+from fake_useragent import UserAgent                                                       # 导入User-Agent池模块
+# from lxml import etree                                                                                   # 导入lxml库,用于解析HTML/XML文档,这里主要用于XPath解析,备用
 from webdriver_manager.chrome import ChromeDriverManager            # 自动管理ChromeDriver
 
-# ----------------------------------- Selenium 辅助函数 ------------------------------------------ #
-def get_page_with_selenium_fallback(target_url, user_agent_str,proxy_address=None):
+# ----------------------------------- Selenium 辅助函数：设置反检测WebDriver ------------------------------------------ #
+def setup_undetected_driver(user_agent_str, proxy_address=None, headless=True, window_size=(1920, 1080)):
+    """
+    设置并返回一个配置了反检测措施的Selenium Chrome WebDriver实例。
+
+    参数:
+        user_agent_str (str): 用于WebDriver的User-Agent字符串。
+        proxy_address (str, optional): 代理服务器地址，格式如 "http://ip:port"。默认为None。
+        headless (bool): 是否以无头模式运行浏览器。默认为True。
+        window_size (tuple): 浏览器窗口大小，例如 (1920, 1080)。
+
+    返回:
+        webdriver.Chrome: 配置好的WebDriver实例，如果初始化失败则返回None。
+    """
+    chrome_options = Options()
+
+    if headless:
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-gpu") # 某些系统上无头模式需要
+        chrome_options.add_argument("--no-sandbox")  # 某些Linux环境可能需要
+
+    chrome_options.add_argument(f"user-agent={user_agent_str}")
+    chrome_options.add_argument(f"--window-size={window_size[0]},{window_size[1]}")
+
+    # --- 核心反检测措施 ---
+    # 1. 禁用 'enable-automation' 标志，防止网站检测到 Selenium 自动化
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    # 2. 禁用自动化扩展，进一步隐藏自动化痕迹
+    chrome_options.add_experimental_option('useAutomationExtension', False)
+    # 3. 禁用 Blink 引擎的自动化控制特性，更深层次的反检测
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+
+    if proxy_address:
+        chrome_options.add_argument(f'--proxy-server={proxy_address}')
+        print(f"Selenium将使用代理: {proxy_address}")
+
+    driver = None
+    try:
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+
+        # --- 在页面加载前执行 JavaScript，进一步隐藏 'navigator.webdriver' ---
+        # 这段JS会在每个新文档加载时执行，确保 navigator.webdriver 始终为 undefined
+        driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+            "source": """
+                Object.defineProperty(navigator, 'webdriver', {
+                    get: () => undefined
+                })
+            """
+        })
+        return driver
+    except Exception as e:
+        print(f"初始化ChromeDriver失败: {e}")
+        print("请检查网络连接或手动下载ChromeDriver并放置到系统PATH中.")
+        return None
+
+# ----------------------------------- Selenium 辅助函数：获取页面内容 ------------------------------------------ #
+def get_page_with_selenium_fallback(target_url, user_agent_str, proxy_address=None):
     """
     当requests库遇到反爬虫时，作为备用方案，使用Selenium（无头浏览器）访问指定URL并返回页面源代码。
     参数:
@@ -28,41 +85,48 @@ def get_page_with_selenium_fallback(target_url, user_agent_str,proxy_address=Non
     返回:
         bytes: 成功获取的页面内容（UTF-8编码的字节），如果失败则返回None。
     """
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")                                         # 无头模式，不显示浏览器界面
-    chrome_options.add_argument("--disable-gpu")                                   # 禁用GPU加速，某些系统上可能需要
-    chrome_options.add_argument("--no-sandbox")                                   # 禁用沙箱模式，某些Linux环境可能需要
-    chrome_options.add_argument(f"user-agent={user_agent_str}")         # 设置传入的User-Agent
-    if proxy_address:                                                                                              # 如果提供了代理地址(通过形参传入),则配置代理
-        chrome_options.add_argument(f'--proxy-server={proxy_address}')
-        print(f"Selenium将使用代理: {proxy_address}")
-
-    driver = None                                                                                             # 初始化driver为None，确保在finally块中可以用来安全检查
-
-    try:                                                                                                                # 使用webdriver_manager自动下载并管理ChromeDriver
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=chrome_options)
-    except Exception as e:
-        print(f"初始化ChromeDriver失败: {e}")
-        print("请检查网络连接或手动下载ChromeDriver并放置到系统PATH中.")
-        return None                                                                                             # 初始化失败,结束函数执行并返回None
+    # 调用新的辅助函数来设置WebDriver
+    # 默认以无头模式运行，你可以通过修改 headless=False 来查看浏览器操作
+    driver = setup_undetected_driver(user_agent_str, proxy_address, headless=True)
+    if driver is None:
+        return None # WebDriver初始化失败，直接返回
 
     try:
         print(f"尝试使用Selenium访问: {target_url}")
         driver.get(target_url)
-        # time.sleep(random.uniform(3, 7))                                            # 增加等待时间，确保页面加载和JavaScript执行完成，随机延时更自然,已经用下面的显式等待替换
-        wait_timeout = 10                                                                               # 定义显式等待的最大超时时间
-        WebDriverWait(driver, wait_timeout).until(ec.presence_of_element_located((By.TAG_NAME, 'body')))                           # 等待页面中的<body>标签出现
+
+        # --- 模拟人类行为：随机滚动页面 ---
+        # 这有助于模拟用户浏览行为，降低被检测为机器人的风险
+        scroll_height = driver.execute_script("return document.body.scrollHeight")
+        # 随机滚动到页面中间某个位置
+        driver.execute_script(f"window.scrollTo(0, {random.uniform(0.2, 0.8) * scroll_height});")
+        time.sleep(random.uniform(1, 2)) # 滚动后等待片刻
+        # 随机滚动回顶部或另一个位置
+        driver.execute_script(f"window.scrollTo(0, {random.uniform(0, 0.2) * scroll_height});")
+        time.sleep(random.uniform(1, 2)) # 再次等待
+
+        wait_timeout = 15 # 增加等待时间，给JavaScript更多时间执行和反爬虫逻辑处理
+        WebDriverWait(driver, wait_timeout).until(ec.presence_of_element_located((By.TAG_NAME, 'body')))
         print(f"Selenium页面加载完成（等待最长{wait_timeout}秒）。")
-        selenium_html_content = driver.page_source                                      # Selenium获取的是字符串
-        print("Selenium成功获取页面！")                                                           # 执行到这里都没有发生异常,说明成功获取页面
-        return selenium_html_content.encode('utf-8')                                      # 将字符串编码转为二进制返回,主要是为了与response.content格式一致,可以被with open语句处理
+
+        # 检查页面是否仍然是验证码页面
+        # 你需要根据验证码页面的HTML结构来判断
+        # 例如，如果验证码页面有一个特定的ID或class
+        if "滑块验证" in driver.page_source or "captcha" in driver.current_url: # 粗略判断
+            print("Selenium检测到验证码页面，无法自动绕过。")
+            # driver.save_screenshot("captcha_page.png") # 可以选择保存截图以便分析
+            return None
+
+        selenium_html_content = driver.page_source
+        print("Selenium成功获取页面！")
+        return selenium_html_content.encode('utf-8')
     except Exception as e:
         print(f"Selenium访问失败: {e}")
-        return None                                                                                             # 访问失败,结束函数执行并返回None
+        return None
     finally:
-        if driver:                                                                                                   # 确保driver对象已创建才尝试退出
-            driver.quit()                                                                                         # 确保关闭浏览器
+        if driver:
+            driver.quit()
+            print("Selenium浏览器已关闭。")
 
 
 # ----------------------------------- 主程序入口 ------------------------------------------ #
@@ -73,7 +137,7 @@ if __name__ == "__main__":
     根据计算机中的目录结构来构建以下存储变量,把获取/爬取的内容自动按照文件类型保存在对应目录中
     例如,当获取的是一首歌曲时,只需要修改file_name的值和file_type[0]中的脚标即可
     """
-    file_dir = r"E:\Fetch resource"
+    file_dir = r"D:\Fetch resource"
     file_type = ["Music", "Video", "Picture", "Text", "HTML", "Other"]
     file_name = "测试.html"
     file_path = os.path.join(file_dir, file_type[4], file_name)
