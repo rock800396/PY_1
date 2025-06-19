@@ -52,12 +52,12 @@ def setup_undetected_driver(user_agent_str, proxy_address=None, headless=True, w
 
     if proxy_address:
         chrome_options.add_argument(f'--proxy-server={proxy_address}')
-        print(f"Selenium将使用代理: {proxy_address}")
 
-    driver = None
+    driver = None                               # 初始化WebDriver变量为None
+
     try:
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+        service = Service(ChromeDriverManager().install())                                                      # 自动下载并安装最新的ChromeDriver
+        driver = webdriver.Chrome(service=service, options=chrome_options)                    # 创建Chrome WebDriver实例
 
         # --- 在页面加载前执行 JavaScript，进一步隐藏 'navigator.webdriver' ---
         # 这段JS会在每个新文档加载时执行，确保 navigator.webdriver 始终为 undefined
@@ -85,14 +85,14 @@ def get_page_with_selenium_fallback(target_url, user_agent_str, proxy_address=No
     返回:
         bytes: 成功获取的页面内容（UTF-8编码的字节），如果失败则返回None。
     """
-    # 调用新的辅助函数来设置WebDriver
-    # 默认以无头模式运行，你可以通过修改 headless=False 来查看浏览器操作
+    # 调用辅助函数setup_undetected_driver来设置WebDriver
+    # 默认以无头模式运行，可以通过修改 headless=False 来查看浏览器操作
     driver = setup_undetected_driver(user_agent_str, proxy_address, headless=True)
     if driver is None:
         return None # WebDriver初始化失败，直接返回
 
     try:
-        print(f"尝试使用Selenium访问: {target_url}")
+        print(f"正在尝试使用Selenium访问: {target_url},请稍候......")
         driver.get(target_url)
 
         # --- 模拟人类行为：随机滚动页面 ---
@@ -109,9 +109,8 @@ def get_page_with_selenium_fallback(target_url, user_agent_str, proxy_address=No
         WebDriverWait(driver, wait_timeout).until(ec.presence_of_element_located((By.TAG_NAME, 'body')))
         print(f"Selenium页面加载完成（等待最长{wait_timeout}秒）。")
 
-        # 检查页面是否仍然是验证码页面
-        # 你需要根据验证码页面的HTML结构来判断
-        # 例如，如果验证码页面有一个特定的ID或class
+        # 检查页面是否是验证码页面,如果是,还需要构建相关的反反爬措施,等待后续施工
+        # 需要根据验证码页面的HTML结构来判断,例如，如果验证码页面有一个特定的ID或class,这里先用粗略的字符串判断,等待后续施工
         if "滑块验证" in driver.page_source or "captcha" in driver.current_url: # 粗略判断
             print("Selenium检测到验证码页面，无法自动绕过。")
             # driver.save_screenshot("captcha_page.png") # 可以选择保存截图以便分析
@@ -119,7 +118,8 @@ def get_page_with_selenium_fallback(target_url, user_agent_str, proxy_address=No
 
         selenium_html_content = driver.page_source
         print("Selenium成功获取页面！")
-        return selenium_html_content.encode('utf-8')
+        return selenium_html_content.encode('utf-8')                # 将HTML内容编码为UTF-8字节串,这里是为了与requests的content保持一致,方便保存为文件
+        # return selenium_html_content                                      # 如果需要直接返回字符串,可以去掉.encode('utf-8')部分,用这一句代替
     except Exception as e:
         print(f"Selenium访问失败: {e}")
         return None
@@ -155,19 +155,19 @@ if __name__ == "__main__":
     # ----------默认设置为False,保持现有逻辑,如果设置为 True ,直接跳过request尝试,使用Selenium---------- #
     use_selenium_directly = False
 
-    while True:                                                                                                 # 使用while循环,直到用户输入合法的URL
+    while True:                                                                                                 # 使用while循环,直到用户输入合法的URL,实践中需要限制输入次数,这里暂不考虑
         url = input("请输入需要爬取的URL:")                                                    # 接收用户输入的URL
-        if re.match(pattern, url) is None:                                                         # 如果网址不合法,则抛出异常
+        if re.match(pattern, url) is None:                                                          # 如果网址不合法,则抛出异常
             print("输入的网址不合法,请检查后重新输入!")
             continue                                                                                             # 继续下一轮循环，重新输入URL
 
-        if not url.startswith(('http://', 'https://')):                                                 # 默认添加http/https,确保网址包含协议头
+        if not url.startswith(('http://', 'https://')):                                             # 默认添加http/https,确保网址包含协议头
             url = 'https://' + url
 
         # ---------------------- 解析URL,动态设置Host和Referer ----------------------- #
-        parsed_url = urllib.parse.urlparse(url)                                                                   # urllib.parse.urlparse() 会将URL分解成多个组件 (协议, 域名, 路径, 参数等)
+        parsed_url = urllib.parse.urlparse(url)                                                                 # urllib.parse.urlparse() 会将URL分解成多个组件 (协议, 域名, 路径, 参数等)
         dynamic_host = parsed_url.netloc                                                                       # 获取域名和端口，例如 www.baidu.com 或 example.com:8080
-        dynamic_referer = f"{parsed_url.scheme}://{parsed_url.netloc}/"                          # 构造Referer，通常是协议+域名+斜杠，表示从网站根目录跳转而来
+        dynamic_referer = f"{parsed_url.scheme}://{parsed_url.netloc}/"                     # 构造Referer，通常是协议+域名+斜杠，表示从网站根目录跳转而来
 
         # ----------------------------------- 构建请求头 ------------------------------------ #
         current_user_agent = UserAgent().random                                        # 为本次请求生成一个随机User-Agent，requests和Selenium都使用它
@@ -185,19 +185,19 @@ if __name__ == "__main__":
             "Sec-Fetch-Site": "same-origin",                                                      # 或者 "none" 如果是直接访问
             "Sec-Fetch-User": "?1",
             "Upgrade-Insecure-Requests": "1",
-            "User-Agent": current_user_agent,                                                  # 使用随机User-Agent
+            "User-Agent": current_user_agent,                                                  # 使用随机User-Agent要特别注意,在多次请求同一网站并保持cookie时,User-Agent最好保持一致,否则可能会被网站识别为不同的用户
         }
         session.headers.update(headers)                                                        # 将headers设置到session中
 
         if use_selenium_directly:
             print("根据设置，直接使用Selenium获取页面。")
             final_content_to_save = get_page_with_selenium_fallback(url, current_user_agent, selenium_proxy_address)
-            break                                                                                           # 无论Selenium成功与否,都跳出while循环,转由while循环后面的逻辑来执行
+            break                                                                                                 # 无论Selenium成功与否,都跳出while循环,转由while循环后面的逻辑来执行
         else:
             try:
                 print(f"尝试使用requests访问: {url}")
                 time.sleep(random.uniform(1, 3))                                     # 随机延时1到3秒,模拟人类行为,防止请求过快被封IP
-                response = session.get(url,timeout=10,proxies=my_proxies)         # 使用session发送GET请求,比直接使用requests.get()更合适,session是会话级请求,会自动处理cookies,更适合需要多次请求的场景
+                response = session.get(url,timeout=10,proxies=my_proxies)     # 使用session发送GET请求,比直接使用requests.get()更合适,session是会话级请求,会自动处理cookies,更适合需要多次请求的场景
                 response.raise_for_status()                                                              # 如果状态码不是2xx,会抛出HTTPError异常,注意,30X重定向会被request模块自动处理,不会抛出异常
                 final_content_to_save = response.content                                     # 保存获取的内容
                 print("requests成功获取页面！")                                                      # 到这里都没有发生异常,说明成功获取页面
@@ -213,10 +213,9 @@ if __name__ == "__main__":
                 只有当Selenium成功获取到内容,才会返回非空的二进制数据,赋值给final_content_to_save
                 """
                 if final_content_to_save:
-                    break                                                                                                                                       # Selenium成功，跳出while循环
-                else:
                     print("Selenium也未能成功获取页面。请检查网络或反爬虫策略。")
-                    break                                                                                                                                       # 即使失败了也跳出循环,如果想从头开始下一轮循环,这里改成continue即可
+                break                                                                                                                                           # 无论Selenium是否成功，都跳出while循环,上面的if语句只是用于跟踪程序执行情况,不影响逻辑
+
             except Exception as e:                                                                                                                   # 捕获其他未知异常
                 print(f"发生未知错误: {e}")                                                                                                          # 打印异常信息
                 sys.exit(2)                                                                                                                                    # 退出程序,错误码2用来跟踪未知错误
@@ -228,4 +227,4 @@ if __name__ == "__main__":
              f.write(final_content_to_save)
         print(f"恭喜大侠!文件已成功下载,位置: {file_path}")
     else:
-        print("未能成功获取任何内容并保存。")
+        print("未能成功获取或保存,请检查网络连接或反爬虫策略。")                                                         # 如果final_content_to_save仍然是None,说明没有成功获取内容
