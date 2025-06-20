@@ -29,7 +29,7 @@ import random
 import re
 import sys
 import time
-from urllib.parse import urlparse
+# from urllib.parse import urlparse
 import requests
 
 # ----------------------------------- 强大的Selenium与相关模块导入 ------------------------------------------ #
@@ -40,15 +40,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 # By模块提供了多种定位网页元素的方式（如ID, CSS_SELECTOR等）
 from selenium.webdriver.common.by import By
-# ActionChains用于模拟更复杂的用户操作，如鼠标悬停、拖拽等（本脚本暂未深度使用）
-from selenium.webdriver.common.action_chains import ActionChains
 # fake_useragent库可以方便地生成各种浏览器的User-Agent字符串
 from fake_useragent import UserAgent
 # webdriver_manager可以自动下载和管理与当前Chrome浏览器版本匹配的ChromeDriver
 from webdriver_manager.chrome import ChromeDriverManager
 # 导入Beautifulsoup和lxml模块用于后续数据解析
-from bs4 import BeautifulSoup
-from lxml import etree
+# from bs4 import BeautifulSoup
+# from lxml import etree
+# ActionChains用于模拟更复杂的用户操作，如鼠标悬停、拖拽等（本脚本暂未深度使用）
+# from selenium.webdriver.common.action_chains import ActionChains
 
 # ================================================================================== #
 #                                                                                    #
@@ -148,19 +148,19 @@ def generate_site_config(driver, url):
         print("正在智能分析页面结构，寻找关键内容区域...")
 
         # 定义用于启发式搜索的关键词和HTML标签
-        KEYWORDS = ['main', 'content', 'container', 'list', 'article', 'search', 'app', 'footer']
-        SEMANTIC_TAGS = ['main', 'footer', 'article', 'aside']
+        keywords = ['main', 'content', 'container', 'list', 'article', 'search', 'app', 'footer']
+        semantic_tag = ['main', 'footer', 'article', 'aside']
 
         found_locators = []
 
         # 优先查找具有明确语义的HTML5标签
-        for tag in SEMANTIC_TAGS:
+        for tag in semantic_tag:
             if driver.find_elements(By.TAG_NAME, tag):
                 print(f"  [启发式命中] 发现语义化标签: <{tag}>")
                 found_locators.append((By.TAG_NAME, tag))
 
         # 其次，通过CSS选择器查找ID或class属性中包含常见关键词的元素
-        for keyword in KEYWORDS:
+        for keyword in keywords:
             # 构造两个CSS选择器：一个匹配id，一个匹配class
             selectors = [f'[id*="{keyword}"]', f'[class*="{keyword}"]']
             for selector in selectors:
