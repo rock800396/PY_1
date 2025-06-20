@@ -46,6 +46,9 @@ from selenium.webdriver.common.action_chains import ActionChains
 from fake_useragent import UserAgent
 # webdriver_manager可以自动下载和管理与当前Chrome浏览器版本匹配的ChromeDriver
 from webdriver_manager.chrome import ChromeDriverManager
+# 导入Beautifulsoup和lxml模块用于后续数据解析
+from bs4 import BeautifulSoup
+from lxml import etree
 
 # ================================================================================== #
 #                                                                                    #
@@ -55,7 +58,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 # --- 1. 文件与路径配置 ---
 # 爬取文件保存的基础目录，请确保该路径存在或程序有权限创建
-SAVE_DIR_BASE = r"D:\Fetch resource"
+SAVE_DIR_BASE = r"E:\Fetch resource"
 # 文件分类子目录列表 (仅供参考，用于规范化命名)
 SAVE_SUB_DIRS = ["Music", "Video", "Picture", "Text", "HTML", "Other"]
 # **【新配置】** 指定本次运行要使用的子目录名称，必须是上面列表中的一个
@@ -70,9 +73,9 @@ PROXY_ADDRESS = "http://127.0.0.1:10090"
 
 # --- 3. 核心策略与行为配置 ---
 # 是否直接使用Selenium模式。True: 跳过requests，直接用Selenium；False: 优先用requests，失败或不满意再用Selenium
-USE_SELENIUM_DIRECTLY = False
+USE_SELENIUM_DIRECTLY = True
 # Selenium是否以无头模式运行。True: 不会弹出浏览器窗口，在后台运行；False: 会弹出真实的浏览器窗口，方便调试
-RUN_HEADLESS = False
+RUN_HEADLESS = True
 # Selenium等待关键动态元素加载的超时时间（秒）。如果页面加载很慢，可以适当增加此值
 SELENIUM_WAIT_TIMEOUT = 20
 # 模拟滚动页面时，每次滚动操作后等待内容加载的随机时间范围（秒），模拟人类行为
