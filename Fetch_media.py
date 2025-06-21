@@ -59,7 +59,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 # --- 1. 文件与路径配置 ---
 # 爬取文件保存的基础目录，请确保该路径存在或程序有权限创建
-SAVE_DIR_BASE = r"E:\Fetch resource"
+SAVE_DIR_BASE = r"D:\Fetch resource"
 # 文件分类子目录列表 (仅供参考，用于规范化命名)
 SAVE_SUB_DIRS = ["Music", "Video", "Picture", "Text", "HTML", "Other"]
 # **【新配置】** 指定本次运行要使用的子目录名称，必须是上面列表中的一个

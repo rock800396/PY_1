@@ -1,9 +1,9 @@
-# html_parser.py (最终版 v4.0 - 融合精华)
+# html_parser.py (最终版 v4.0 - 融合精华 - 修复Pylance警告版)
 
 import os
-import shutil
+# import shutil
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag # 核心修改1: 导入 Tag 类
 from urllib.parse import urljoin, urlparse
 from collections import defaultdict
 from PIL import Image  # 重新导入Pillow库用于图片处理
@@ -31,6 +31,10 @@ def extract_text_from_file(html_filepath, output_txt_path, target_tags=None):
     # 使用 defaultdict 按标签名对文本进行分类
     texts_by_tag = defaultdict(list)
     for tag in tags_to_process:
+        # 核心修改2: 确保 tag 是一个 Tag 对象，避免访问非Tag元素的name属性
+        if not isinstance(tag, Tag):
+            continue # 如果不是Tag对象（例如是NavigableString或Comment），则跳过本次循环
+
         if tag.name in ['script', 'style', 'meta', 'link', 'head', 'title']:
             continue
         text = tag.get_text(strip=True)
@@ -89,6 +93,12 @@ def extract_images_generator(html_filepath, output_dir, min_width=320, min_heigh
         yield f"将跳过分辨率小于 {min_width}x{min_height} 的图片。"
 
     for img_tag in images:
+        # 核心修改3: 确保 img_tag 是一个 Tag 对象，避免访问非Tag元素的get属性
+        if not isinstance(img_tag, Tag):
+            skipped_count += 1
+            yield "跳过：发现非标签元素（例如文本或注释），无法处理其属性。"
+            continue
+
         src = img_tag.get('src')
         if not src:
             skipped_count += 1
@@ -96,7 +106,10 @@ def extract_images_generator(html_filepath, output_dir, min_width=320, min_heigh
             continue
 
         try:
-            abs_url = urljoin(base_url, src)
+            # 核心修改4: 显式将 src 转换为字符串，以满足 urljoin 的类型要求
+            # Pylance 认为 img_tag.get('src') 可能返回列表，但对于 'src' 属性，通常是字符串。
+            src_for_urljoin = str(src)
+            abs_url = urljoin(base_url, src_for_urljoin)
             parsed_path = urlparse(abs_url).path
             filename = os.path.basename(parsed_path) if parsed_path else None
 
