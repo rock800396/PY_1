@@ -1,126 +1,161 @@
-# html_parser.py
+# html_parser.py (最终版 v4.0 - 融合精华)
 
 import os
 import shutil
+import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urljoin, urlparse
+from collections import defaultdict
+from PIL import Image  # 重新导入Pillow库用于图片处理
+from io import BytesIO
 
 
-def extract_text_from_file(html_path, output_txt_path, target_tags=None):
+# 确保你已经安装了所有必要的库:
+# pip install requests beautifulsoup4 lxml Pillow
+
+def extract_text_from_file(html_filepath, output_txt_path, target_tags=None):
     """
-    从本地HTML文件中提取文本内容。
-
-    参数:
-        html_path (str): 源HTML文件的路径。
-        output_txt_path (str): 保存提取文本的.txt文件的路径。
-        target_tags (list, optional): 一个包含目标标签名的列表 (例如 ['p', 'h1'])。
-                                      如果为None或空列表，则提取所有标签的文本。
-
-    返回:
-        str: 操作结果的描述信息。
+    从HTML文件中提取文本，并按标签分类保存。
+    (融合了你喜欢的GitHub增强版逻辑)
     """
     try:
-        # 使用 'utf-8' 编码打开HTML文件，这是最常见的网页编码
-        with open(html_path, 'r', encoding='utf-8') as f:
-            content = f.read()
+        with open(html_filepath, 'r', encoding='utf-8') as f:
+            soup = BeautifulSoup(f, 'lxml')
     except FileNotFoundError:
-        return f"错误：源文件未找到 -> {html_path}"
+        return f"错误: 源文件未找到 {html_filepath}"
     except Exception as e:
         return f"读取文件时发生错误: {e}"
 
-    soup = BeautifulSoup(content, 'html.parser')
-
-    # 如果没有指定目标标签，则查找所有标签
-    # soup.find_all(True) 是一个技巧，可以匹配任何标签
     tags_to_process = soup.find_all(target_tags) if target_tags else soup.find_all(True)
 
-    extracted_data = []
+    # 使用 defaultdict 按标签名对文本进行分类
+    texts_by_tag = defaultdict(list)
     for tag in tags_to_process:
-        # 忽略脚本和样式标签，因为它们的内容不是我们想要的文本
-        if tag.name in ['script', 'style']:
+        if tag.name in ['script', 'style', 'meta', 'link', 'head', 'title']:
             continue
-
-        # 获取标签内的纯文本，strip=True可以去除两端多余的空白
         text = tag.get_text(strip=True)
-
-        # 如果标签内有有效文本，则记录下来
         if text:
-            # 格式化输出，清晰地标明文本来源
-            formatted_text = f"--- 来自标签: <{tag.name}> ---\n{text}\n\n"
-            extracted_data.append(formatted_text)
+            texts_by_tag[tag.name].append(text)
 
-    if not extracted_data:
+    if not texts_by_tag:
         return "未在指定标签中找到任何可提取的文本。"
 
+    # 格式化并准备写入文件的最终数据
+    final_output_data = []
+    for tag_name, texts in sorted(texts_by_tag.items()):  # 按标签名排序，更整洁
+        final_output_data.append(f"--- 来自所有 <{tag_name}> 标签的文本 ---\n\n")
+        final_output_data.append("\n\n".join(texts))  # 段落间用双换行分隔，更清晰
+        final_output_data.append("\n\n" + "=" * 40 + "\n\n")
+
     try:
-        # 将提取到的所有内容写入输出文件
         with open(output_txt_path, 'w', encoding='utf-8') as f:
-            f.writelines(extracted_data)
-        return f"文本提取成功！已保存到: {output_txt_path}"
+            f.writelines(final_output_data)
+        return f"文本提取成功！已分类保存到: {output_txt_path}"
     except Exception as e:
         return f"写入文件时发生错误: {e}"
 
 
-def extract_images_from_file(html_path, output_dir):
+def extract_images_generator(html_filepath, output_dir, min_width=320, min_height=240):
     """
-    从本地HTML文件中提取图片并保存到指定目录。
-    假设图片路径是相对于HTML文件的相对路径。
-
-    参数:
-        html_path (str): 源HTML文件的路径。
-        output_dir (str): 保存提取图片的目录。
-
-    返回:
-        str: 操作结果的描述信息。
+    这是一个生成器函数，用于提取、过滤(按分辨率)并下载图片。
+    (融合了你喜欢的GitHub增强版逻辑)
     """
+    saved_count = 0
+    skipped_count = 0
+
+    yield "任务开始：正在解析HTML文件..."
+
     try:
-        with open(html_path, 'r', encoding='utf-8') as f:
-            content = f.read()
+        with open(html_filepath, 'r', encoding='utf-8') as f:
+            soup = BeautifulSoup(f, 'lxml')
     except FileNotFoundError:
-        return f"错误：源文件未找到 -> {html_path}"
+        yield f"错误: 源文件未找到 {html_filepath}"
+        return
     except Exception as e:
-        return f"读取文件时发生错误: {e}"
+        yield f"解析HTML时出错: {e}"
+        return
 
-    soup = BeautifulSoup(content, 'html.parser')
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        yield f"已创建输出目录: {output_dir}"
 
-    # 找到所有的 <img> 标签
-    img_tags = soup.find_all('img')
+    base_url = 'file:///' + os.path.abspath(html_filepath).replace('\\', '/')
+    images = soup.find_all('img')
 
-    if not img_tags:
-        return "未在HTML文件中找到任何 <img> 标签。"
+    if not images:
+        yield "未在文件中找到任何 <img> 标签。"
+    else:
+        yield f"共找到 {len(images)} 个 <img> 标签，开始处理..."
+        yield f"将跳过分辨率小于 {min_width}x{min_height} 的图片。"
 
-    # 获取HTML文件所在的目录，用于拼接图片的相对路径
-    source_html_dir = os.path.dirname(html_path)
-
-    # 确保输出目录存在
-    os.makedirs(output_dir, exist_ok=True)
-
-    copied_count = 0
-    errors = []
-
-    for img in img_tags:
-        # 获取图片的 src 属性
-        src = img.get('src')
+    for img_tag in images:
+        src = img_tag.get('src')
         if not src:
+            skipped_count += 1
+            yield "跳过：一个<img>标签没有src属性。"
             continue
 
-        # 假设 src 是相对路径，构建图片的完整源路径
-        # os.path.join 会智能地处理路径分隔符（在Windows上是'\'）
-        image_source_path = os.path.join(source_html_dir, src)
+        try:
+            abs_url = urljoin(base_url, src)
+            parsed_path = urlparse(abs_url).path
+            filename = os.path.basename(parsed_path) if parsed_path else None
 
-        # 检查图片文件是否存在
-        if os.path.exists(image_source_path):
-            try:
-                # shutil.copy 会将文件从源路径复制到目标目录
-                shutil.copy(image_source_path, output_dir)
-                copied_count += 1
-            except Exception as e:
-                errors.append(f"无法复制图片 {src}: {e}")
-        else:
-            errors.append(f"图片文件未找到: {image_source_path}")
+            if not filename:
+                skipped_count += 1
+                yield f"跳过：无法从URL解析出文件名 -> {src}"
+                continue
 
-    result_message = f"操作完成。成功复制 {copied_count} 张图片。"
-    if errors:
-        result_message += "\n发生以下错误:\n" + "\n".join(errors)
+            # --- 融合逻辑：下载并检查分辨率 ---
+            yield f"检查: {filename} ..."
 
-    return result_message
+            image_data_bytes = None
+            # 判断是网络图片还是本地文件
+            if abs_url.startswith('http'):
+                response = requests.get(abs_url, timeout=10)
+                response.raise_for_status()
+                image_data_bytes = response.content
+            else:
+                source_path = urlparse(abs_url).path
+                if os.name == 'nt' and source_path.startswith('/'):
+                    source_path = source_path[1:]
+                if os.path.exists(source_path):
+                    with open(source_path, 'rb') as f:
+                        image_data_bytes = f.read()
+                else:
+                    skipped_count += 1
+                    yield f"跳过(未找到): 本地文件 {source_path}"
+                    continue
 
+            if not image_data_bytes:
+                skipped_count += 1
+                yield f"跳过: 未能获取图片数据 -> {filename}"
+                continue
+
+            # 使用Pillow在内存中检查图片
+            image_stream = BytesIO(image_data_bytes)
+            with Image.open(image_stream) as img_obj:
+                width, height = img_obj.size
+
+            yield f"  > 分辨率: {width}x{height}"
+
+            # 判断分辨率
+            if width < min_width or height < min_height:
+                skipped_count += 1
+                yield f"  > 跳过 (尺寸太小)"
+                continue
+
+            # 分辨率符合，保存图片
+            save_path = os.path.join(output_dir, filename)
+            with open(save_path, 'wb') as f:
+                f.write(image_data_bytes)
+
+            saved_count += 1
+            yield f"  > 已保存: {filename}"
+
+        except Exception as e:
+            skipped_count += 1
+            # 简化错误信息，避免刷屏
+            error_type = type(e).__name__
+            yield f"失败: 处理 {src} 时出错 ({error_type})"
+
+    yield f"\n--- 任务完成 ---\n共保存 {saved_count} 张图片，跳过 {skipped_count} 张。"

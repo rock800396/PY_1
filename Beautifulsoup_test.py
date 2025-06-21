@@ -1,7 +1,7 @@
 # ------------代码练习:使用beautifulsoup解析已爬取的html文件------------
 from bs4 import BeautifulSoup
 import requests
-file_path = r"D:\Fetch resource\Html\测试.html"
+file_path = r"E:\Fetch resource\Html\测试.html"
 file_local = None
 try:
     # 使用 "rb" 模式打开文件，表示以二进制模式读取,encoding="utf-8"表示将在读取时进行解码file_local为字符串
@@ -27,7 +27,7 @@ if file_local:
         img_url = img_tag.get("src")
         if img_url:
             try:
-                filename = fr"D:\Fetch resource\Picture\IMG_{img_serial}.jpg"
+                filename = fr"E:\Fetch resource\Picture\IMG_{img_serial}.jpg"
                 img_serial += 1
                 response = requests.get(img_url, headers=headers)
                 response.raise_for_status()
