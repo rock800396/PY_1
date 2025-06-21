@@ -122,9 +122,9 @@ class App:
         if not os.path.isdir(dir_path): return True
         if not messagebox.askyesno("确认操作", f"您确定要清空目录 '{dir_path}' 下的所有内容吗？\n此操作不可恢复！",
                                    icon='warning'):
-            self.status_var.set("操作已取消.");
+            self.status_var.set("操作已取消.")
             return False
-        self.status_var.set(f"正在清空目录: {dir_path}...");
+        self.status_var.set(f"正在清空目录: {dir_path}...")
         self.root.update_idletasks()
         try:
             for item_name in os.listdir(dir_path):
@@ -135,22 +135,22 @@ class App:
                     shutil.rmtree(item_path)
             return True
         except Exception as e:
-            messagebox.showerror("错误", f"清空目录时发生错误: {e}");
-            self.status_var.set("清空目录失败.");
+            messagebox.showerror("错误", f"清空目录时发生错误: {e}")
+            self.status_var.set("清空目录失败.")
             return False
 
     def run_text_extraction(self):
         source, output_dir = self.source_file_path.get(), self.output_dir_path.get()
         if not source or not output_dir: messagebox.showerror("错误", "请先选择源文件和输出位置！"); return
         if not self.clear_directory(output_dir): return
-        self.status_var.set("正在提取文本...");
+        self.status_var.set("正在提取文本...")
         self.root.update_idletasks()
         tags_str = self.tags_to_extract.get()
         target_tags = [tag.strip() for tag in tags_str.split(',') if tag.strip()]
         output_filename = os.path.basename(source) + "_text.txt"
         output_txt_path = os.path.join(output_dir, output_filename)
         result = html_parser.extract_text_from_file(source, output_txt_path, target_tags)
-        messagebox.showinfo("操作完成", result);
+        messagebox.showinfo("操作完成", result)
         self.status_var.set("文本提取完成。")
 
 
