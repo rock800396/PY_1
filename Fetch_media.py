@@ -29,6 +29,7 @@ import random
 import re
 import sys
 import time
+import traceback
 # from urllib.parse import urlparse
 import requests
 
@@ -124,6 +125,7 @@ def setup_undetected_driver(user_agent_str, proxy_address=None):
     except Exception as e:
         print(f"初始化undetected-chromedriver失败: {e}")
         print("请检查：1. Chrome浏览器是否已安装。 2. 网络连接是否正常。 3. 代理是否影响了ChromeDriver的下载。")
+        traceback.print_exc()
         return None
 
 
@@ -197,14 +199,24 @@ def fetch_page_with_selenium(url, user_agent_str, proxy_address=None):
     Returns:
         bytes: 成功抓取到的、经过UTF-8编码的页面HTML内容。如果失败则返回None。
     """
+    driver = None  # 预先定义driver变量
     try:
-        # 使用with语句管理浏览器实例，确保任务结束或出错时浏览器能被自动关闭
-        with setup_undetected_driver(user_agent_str, proxy_address) as driver:
-            if driver is None: return None  # 如果驱动初始化失败，直接返回
+        # 步骤1: 先调用函数，获取driver实例
+        driver = setup_undetected_driver(user_agent_str, proxy_address)
 
+        # 步骤2: 检查实例是否有效。如果为None，则初始化失败，直接返回
+        if driver is None:
+            print("驱动初始化失败，无法继续执行 Selenium 任务。")
+            return None
+
+        # 步骤3: 确认driver是一个有效对象后，再安全地使用with语句管理其生命周期
+        # with语句将确保在代码块结束或发生异常时，自动调用driver.quit()关闭浏览器
+        with driver:
             # 调用智能分析函数，获取等待策略
             site_config = generate_site_config(driver, url)
-            if not site_config: return None  # 如果分析失败，也直接返回
+            if not site_config:
+                # 如果分析失败，由于driver仍在with块内，会自动关闭，然后函数返回None
+                return None
 
             print(f"\n--- 开始正式爬取 ---")
             print(f"正在访问: {url}, 请稍候......")
@@ -238,9 +250,12 @@ def fetch_page_with_selenium(url, user_agent_str, proxy_address=None):
             print("Selenium成功获取渲染后的完整页面！")
             # 将字符串编码为bytes，与requests.content的类型保持一致
             return final_html_content.encode('utf-8')
+
     except Exception as e:
         # 捕获在整个Selenium流程中可能发生的任何异常（如超时、元素找不到等）
         print(f"在Selenium主流程中发生错误: {e}")
+        # 注意：即使这里发生异常，如果driver已经被成功创建，
+        # Python的异常处理机制会先执行with语句的退出逻辑（关闭浏览器），然后再执行这里的代码。
         return None
 
 
