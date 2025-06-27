@@ -1,5 +1,6 @@
 # ------------代码练习:使用beautifulsoup解析已爬取的html文件------------
 from bs4 import BeautifulSoup
+from bs4 import Tag
 import requests
 file_path = r"E:\Fetch resource\Html\测试.html"
 file_local = None
@@ -21,10 +22,11 @@ if file_local:
     # 将解码后的字符串传递给BeautifulSoup进行解析
     print("\n--- 使用BeautifulSoup解析本地HTML内容 ---")
     soup = BeautifulSoup(file_local, 'lxml')
-    img_tags = soup.find_all("img" , class_ = "BDE_Image")
+    # 这里可以根据实际情况设置检索条件
+    img_tags = soup.find_all("img")
     img_serial = 1
     for img_tag in img_tags:
-        img_url = img_tag.get("src")
+        img_url = str(img_tag.get("src")) if isinstance(img_tag, Tag) and img_tag.get("src") else None
         if img_url:
             try:
                 filename = fr"E:\Fetch resource\Picture\IMG_{img_serial}.jpg"
@@ -37,6 +39,7 @@ if file_local:
             except requests.exceptions.RequestException as e:
                 print(f"下载图片 {img_url} 失败: {e}")
             except IOError as e:
+                filename = 'unknown_file_path'
                 print(f"保存图片 {filename} 失败: {e}")
 else:
     print("未能成功读取或解码HTML内容，无法进行解析。")
