@@ -59,7 +59,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 # --- 1. 文件与路径配置 ---
 # 爬取文件保存的基础目录，请确保该路径存在或程序有权限创建
-SAVE_DIR_BASE = r"D:\Fetch resource"
+SAVE_DIR_BASE = r"E:\Fetch resource"
 # 文件分类子目录列表 (仅供参考，用于规范化命名)
 SAVE_SUB_DIRS = ["Music", "Video", "Picture", "Text", "HTML", "Other"]
 # **【新配置】** 指定本次运行要使用的子目录名称，必须是上面列表中的一个
@@ -70,7 +70,8 @@ DEFAULT_FILENAME = "测试.html"
 # --- 2. 代理配置 ---
 # 如果不需要代理，请将下面的值设为 None。如果需要，请填写完整的代理地址
 # 示例: "http://127.0.0.1:10090" 或 "socks5://127.0.0.1:1080"
-PROXY_ADDRESS = "http://127.0.0.1:10090"
+# PROXY_ADDRESS = "http://127.0.0.1:10090"
+PROXY_ADDRESS = None
 
 # --- 3. 核心策略与行为配置 ---
 # 是否直接使用Selenium模式。True: 跳过requests，直接用Selenium；False: 优先用requests，失败或不满意再用Selenium

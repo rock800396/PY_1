@@ -99,7 +99,9 @@ def scrape_logic(base_html_path, output_dir, chapter_xpath, content_xpath, statu
         for chapter_num, relative_url in enumerate(chapter_relative_urls, 1):
             full_chapter_url = ""
             try:
-                full_chapter_url = "https:" + relative_url
+                # full_chapter_url = "https:" + relative_url
+                full_chapter_url = "https://www.baishuzhai.cc" + relative_url
+                print(f"当前章节链接为: {full_chapter_url}")
                 print(f"\n--- [{chapter_num}/{total_chapters}] ---")
                 print(f"正在获取内容: {full_chapter_url}")
 
@@ -176,11 +178,11 @@ class ScraperGUI(tk.Tk):
         self.geometry("800x650") # 稍微调高一点窗口
 
         # --- 默认配置 ---
-        self.base_html_path = tk.StringVar(value=r"D:\Fetch resource\HTML\测试.html")
-        self.output_dir = tk.StringVar(value=r"D:\Fetch resource\Other")
+        self.base_html_path = tk.StringVar(value=r"E:\Fetch resource\HTML\测试.html")
+        self.output_dir = tk.StringVar(value=r"E:\Fetch resource\Other")
         # 新增：XPath的默认值
-        self.chapter_xpath = tk.StringVar(value='//li[@class = "chapter-item"]/a/@href')
-        self.content_xpath = tk.StringVar(value='//span[@class = "content-text"]')
+        self.chapter_xpath = tk.StringVar(value='//div/dl/dd/a/@href')
+        self.content_xpath = tk.StringVar(value='//div/div/div[@id="content"]')
 
         self.create_widgets()
 
