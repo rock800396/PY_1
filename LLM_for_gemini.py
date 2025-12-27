@@ -12,7 +12,7 @@ if not gemini_key:
 
 try:
     client = Client(api_key=gemini_key)
-    model_name = "gemini-2.5-flash"
+    model_name = "gemini-3-flash"
     print(f"模型初始化成功!当前配置模型为:{model_name}")
 except GoogleAuthError as e:
     print(f"认证失败:{e}!请检查API Key!")
